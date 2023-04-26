@@ -1,0 +1,64 @@
+﻿<Window x:Class="Homework12.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="16"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        mc:Ignorable="d"
+        Title="Банк А" Height="600" Width="820"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50*"/>
+            <ColumnDefinition Width="50*"/>
+        </Grid.ColumnDefinitions>
+        <materialDesign:Card Grid.Column="0" Grid.Row="0" Padding="32" Margin="16,16,8,16">
+            <StackPanel>
+                <StackPanel>
+                    <Label Content="ВЫБЕРИТЕ КЛИЕНТА:" Height="30" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold"/>
+                </StackPanel>
+                <ListView Height="340" Margin="0,28,0,0">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Имя" Width="150"/>
+                            <GridViewColumn Header="Фамилия" Width="170"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                <StackPanel Orientation="Horizontal" Margin="0,36,0,0">
+                    <Button x:Name="ClientAddButton" Content="Добавить" Height="29" Width="156"/>
+                    <Button x:Name="ClientDelButton" Content="Удалить" Height="29" Width="156"/>
+                </StackPanel>
+            </StackPanel>
+        </materialDesign:Card>
+        <materialDesign:Card Grid.Column="1" Grid.Row="0" Padding="32" Margin="8,16,16,16">
+            <StackPanel x:Name="AccountManagementPanel">
+                <StackPanel>
+                    <Label Content="ВЫБЕРИТЕ СЧЁТ:" Height="30" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold"/>
+                </StackPanel>
+                <ListView Height="340" Margin="0,28,0,0">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Номер счёта" Width="170"/>
+                            <GridViewColumn Header="Сумма" Width="150"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                <StackPanel Orientation="Horizontal" Margin="0,36,0,0">
+                    <Button x:Name="AccOpenButton" Content="Открыть" Height="27" Width="78" FontSize="10"/>
+                    <Button x:Name="AccCloseButton" Content="Закрыть" Height="27" Width="78" FontSize="10"/>
+                    <Button x:Name="AccFundButton" Content="Пополнить" Height="27" Width="78" FontSize="9"/>
+                    <Button x:Name="AccTransButton" Content="Перевести" Height="27" Width="78" FontSize="9"/>
+                </StackPanel>
+            </StackPanel>
+        </materialDesign:Card>
+    </Grid>
+</Window>
