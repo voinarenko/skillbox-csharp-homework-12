@@ -6,7 +6,7 @@ namespace Homework12.Model
     public class Client
     {
         [Key]
-        public int Id { get; set; }
+        public static int Id { get; set; }
         public string? NameFirst { get; set; }
         public string? NameLast { get; set; }
         public List<Account>? Accounts { get; set; }
