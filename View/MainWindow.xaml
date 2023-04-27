@@ -4,6 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewmodel="clr-namespace:Homework12.ViewModel"
+        d:DataContext="{d:DesignInstance Type=viewmodel:DataManage}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="16"
@@ -25,7 +27,7 @@
                 <StackPanel>
                     <Label Content="ВЫБЕРИТЕ КЛИЕНТА:" Height="30" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold"/>
                 </StackPanel>
-                <ListView Height="340" Margin="0,28,0,0">
+                <ListView Height="340" Margin="0,28,0,0" ItemsSource="{Binding AllClients}">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Имя" Width="150"/>
@@ -34,7 +36,7 @@
                     </ListView.View>
                 </ListView>
                 <StackPanel Orientation="Horizontal" Margin="0,36,0,0">
-                    <Button x:Name="ClientAddButton" Content="Добавить" Height="29" Width="156"/>
+                    <Button x:Name="ClientAddButton" Content="Добавить" Height="29" Width="156" Command="{Binding OpenAddNewClientWin}"/>
                     <Button x:Name="ClientDelButton" Content="Удалить" Height="29" Width="156"/>
                 </StackPanel>
             </StackPanel>
@@ -44,7 +46,7 @@
                 <StackPanel>
                     <Label Content="ВЫБЕРИТЕ СЧЁТ:" Height="30" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold"/>
                 </StackPanel>
-                <ListView Height="340" Margin="0,28,0,0">
+                <ListView Height="340" Margin="0,28,0,0" ItemsSource="{Binding AllAccounts}">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Номер счёта" Width="170"/>
@@ -55,8 +57,8 @@
                 <StackPanel Orientation="Horizontal" Margin="0,36,0,0">
                     <Button x:Name="AccOpenButton" Content="Открыть" Height="27" Width="78" FontSize="10"/>
                     <Button x:Name="AccCloseButton" Content="Закрыть" Height="27" Width="78" FontSize="10"/>
-                    <Button x:Name="AccFundButton" Content="Пополнить" Height="27" Width="78" FontSize="9"/>
-                    <Button x:Name="AccTransButton" Content="Перевести" Height="27" Width="78" FontSize="9"/>
+                    <Button x:Name="AccFundButton" Content="Пополнить" Height="27" Width="78" FontSize="9" Command="{Binding OpenAddFundsWin}"/>
+                    <Button x:Name="AccTransButton" Content="Перевести" Height="27" Width="78" FontSize="9" Command="{Binding OpenTransferFundsWin}"/>
                 </StackPanel>
             </StackPanel>
         </materialDesign:Card>
