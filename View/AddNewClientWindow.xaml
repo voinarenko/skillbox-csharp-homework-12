@@ -15,6 +15,7 @@
         FontFamily="{DynamicResource MaterialDesignFont}"
         mc:Ignorable="d"
         Title="Добавить клиента" Height="290" Width="370"
+        Name="AddNewClientWin"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">
     <Grid>
@@ -23,13 +24,13 @@
                 <Label Content="ВВЕДИТЕ ДАННЫЕ КЛИЕНТА:" Height="30" HorizontalAlignment="Center" FontWeight="Bold"/>
                 <StackPanel Orientation="Horizontal" Height="30">
                     <Label Content="Имя:" Width="100" VerticalAlignment="Center"/>
-                    <TextBox x:Name="NameFirstBox" Width="150" VerticalAlignment="Center"/>
+                    <TextBox Name="BoxNameFirst" Width="150" VerticalAlignment="Center" Text="{Binding ClientFirstName}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Height="30">
                     <Label Content="Фамилия:" Width="100" VerticalAlignment="Center"/>
-                    <TextBox x:Name="NameLastBox" Width="150" VerticalAlignment="Center"/>
+                    <TextBox Name="BoxNameLast" Width="150" VerticalAlignment="Center" Text="{Binding ClientLastName}"/>
                 </StackPanel>
-                <Button x:Name="ClientAddOkButton" Content="OK" Height="27" Width="78" Margin="0,30,0,0" Padding="16,4,16,9"/>
+                <Button x:Name="ClientAddOkButton" Content="OK" Height="27" Width="78" Margin="0,30,0,0" Padding="16,4,16,9" Command="{Binding AddNewClient}" CommandParameter="{Binding ElementName=AddNewClientWin}"/>
             </StackPanel>
         </materialDesign:Card>
     </Grid>

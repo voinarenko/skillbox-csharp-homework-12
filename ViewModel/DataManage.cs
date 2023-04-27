@@ -4,7 +4,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Media;
 using Prism.Commands;
+using RelayCommand = CommunityToolkit.Mvvm.Input.RelayCommand;
 
 namespace Homework12.ViewModel
 {
@@ -37,6 +41,35 @@ namespace Homework12.ViewModel
                 OnPropertyChanged("AllAccounts");
             }
         }
+
+        public string? ClientFirstName;
+        public string? ClientLastName;
+
+        #region Команды опреаций с БД
+
+        private RelayCommand? _addNewClient;
+        public RelayCommand AddNewClient
+        {
+            get
+            {
+                return _addNewClient ?? new RelayCommand(obj =>
+                {
+                    Window window = obj as Window;
+                    var resultStr = "";
+                    if (ClientFirstName == null || ClientFirstName.Replace(" ", "").Length == 0)
+                    {
+                        SetRedBlockControl(window, "Box");
+                    }
+                    else
+                    {
+                        resultStr = DataBank.AddClient(ClientFirstName, ClientLastName);
+                    }
+                });
+            }
+        }
+        
+
+        #endregion
 
         #region Команды открытия окон
 
@@ -103,6 +136,16 @@ namespace Homework12.ViewModel
             window.ShowDialog();
         }
         
+        #endregion
+
+        #region Вспомогательные методы
+
+        public void SetRedBlockControl(Window window, string blockName)
+        {
+            var block = window.FindName(blockName) as Control;
+            block.BorderBrush = Brushes.Red;
+        }
+
         #endregion
 
         #region INofifyPropertyChanged
