@@ -79,8 +79,9 @@ namespace Homework12.Model
         /// <summary>
         /// Открытие нового счёта
         /// </summary>
+        /// <param name="client">клиент</param>
         /// <returns>результат выполнения</returns>
-        public static string OpenAccount()
+        public static string OpenAccount(Client client)
         {
             const string result = "Счёт открыт!";
             using var db = new ApplicationContext();
@@ -89,13 +90,13 @@ namespace Homework12.Model
             // проверка существования записи и генерация нового номера
             for (; ; )
             {
-                var accountExists = db.Accounts != null && db.Accounts.Any(a => a.Number == generated);
+                var accountExists = db.Accounts != null && db.Accounts.Any(a => a.Id == generated);
                 if (!accountExists) break;
                 generated = GenerateAccountNumber();
             }
             
             // открытие нового счёта
-            var newAccount = new Account { Number = generated, ClientId = Client.Id };
+            var newAccount = new Account { Id = generated, ClientId = client.Id };
             db.Accounts?.Add(newAccount);
             db.SaveChanges();
 
@@ -114,7 +115,7 @@ namespace Homework12.Model
 
             db.Accounts?.Remove(account);
             db.SaveChanges();
-            result = $"Счёт N{account.Number} удален!";
+            result = $"Счёт N{account.Id} удален!";
             
             return result;
         }
@@ -130,11 +131,11 @@ namespace Homework12.Model
             var result = "Пополнение невозможно!";
             using var db = new ApplicationContext();
 
-            var account = db.Accounts?.FirstOrDefault(a => a.Number == oldAccount.Number);
+            var account = db.Accounts?.FirstOrDefault(a => a.Id == oldAccount.Id);
             if (account == null) return result;
             account.Sum += newSum;
             db.SaveChanges();
-            result = $"Счёт N{account.Number} пополнен на {newSum} монет!";
+            result = $"Счёт N{account.Id} пополнен на {newSum} монет!";
 
             return result;
         }
@@ -152,14 +153,14 @@ namespace Homework12.Model
             var result = "Пополнение невозможно!";
             using var db = new ApplicationContext();
 
-            var account = db.Accounts?.FirstOrDefault(a => a.Number == accountFrom.Number);
-            var targetAccount = db.Accounts?.FirstOrDefault(b => b.Number == accountTo.Number);
+            var account = db.Accounts?.FirstOrDefault(a => a.Id == accountFrom.Id);
+            var targetAccount = db.Accounts?.FirstOrDefault(b => b.Id == accountTo.Id);
             if (account == null) return result;
             account.Sum -= newSum;
             if (targetAccount == null) return result;
             targetAccount.Sum += newSum;
             db.SaveChanges();
-            result = $"Со счёта N{account.Number} переведено {newSum} монет на счёт N{targetAccount}!";
+            result = $"Со счёта N{account.Id} переведено {newSum} монет на счёт N{targetAccount.Id}!";
 
             return result;
         }
