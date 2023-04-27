@@ -1,10 +1,11 @@
 ﻿<Window x:Class="Homework12.View.TransferFundsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Homework12.View"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewmodel="clr-namespace:Homework12.ViewModel"
+        d:DataContext="{d:DesignInstance Type=viewmodel:DataManage}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="16"
@@ -13,7 +14,7 @@
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         mc:Ignorable="d"
-        Title="Перевод средств" Height="270" Width="350"
+        Title="Перевод средств" Height="290" Width="370"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">
     <Grid>
@@ -25,7 +26,7 @@
                     <TextBox x:Name="TransferSumBox" Width="150" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Height="30">
-                    <Label Content="Номер счёта:" Width="100" VerticalAlignment="Center"/>
+                    <Label Content="Счёт:" Width="100" VerticalAlignment="Center"/>
                     <ComboBox x:Name="AccSelectComboBox" Height="22" Width="150" VerticalAlignment="Center"/>
                 </StackPanel>
                 <Button x:Name="ClientAddOkButton" Content="OK" Height="27" Width="78" Margin="0,30,0,0" Padding="16,4,16,9"/>

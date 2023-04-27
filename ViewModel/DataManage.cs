@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using Prism.Commands;
 
 namespace Homework12.ViewModel
 {
@@ -42,47 +43,23 @@ namespace Homework12.ViewModel
         /// <summary>
         /// Команда на открытие окна добавления нового клиента
         /// </summary>
-        private RelayCommand? _openAddNewClientWin;
-        public RelayCommand OpenAddNewClientWin
-        {
-            get
-            {
-                return _openAddNewClientWin ?? new RelayCommand(obj =>
-                {
-                    OpenAddNewClientWindowMethod();
-                });
-            }
-        }
+        private DelegateCommand? _openAddNewClientWin;
+        public DelegateCommand OpenAddNewClientWin =>
+            _openAddNewClientWin ??= new DelegateCommand(OpenAddNewClientWindowMethod);
 
         /// <summary>
         /// Команда на открытие окна пополнения счёта
         /// </summary>
-        private RelayCommand? _openAddFundsWin;
-        public RelayCommand OpenAddFundsWin
-        {
-            get
-            {
-                return _openAddFundsWin ?? new RelayCommand(obj =>
-                {
-                    OpenAddFundsWindowMethod();
-                });
-            }
-        }
+        private DelegateCommand? _openAddFundsWin;
+        public DelegateCommand OpenAddFundsWin =>
+            _openAddFundsWin ??= new DelegateCommand(OpenAddFundsWindowMethod);
 
         /// <summary>
         /// Команда на открытие окна перевода средств
         /// </summary>
-        private RelayCommand? _openTransferFundsWin;
-        public RelayCommand OpenTransferFundsWin
-        {
-            get
-            {
-                return _openTransferFundsWin ?? new RelayCommand(obj =>
-                {
-                    OpenTransferFundsWindowMethod();
-                });
-            }
-        }
+        private DelegateCommand? _openTransferFundsWin;
+        public DelegateCommand OpenTransferFundsWin =>
+            _openTransferFundsWin ??= new DelegateCommand(OpenTransferFundsWindowMethod);
 
         #endregion
 
@@ -91,7 +68,7 @@ namespace Homework12.ViewModel
         /// <summary>
         /// Метод открытия окна добавления нового клиента
         /// </summary>
-        private void OpenAddNewClientWindowMethod()
+        private static void OpenAddNewClientWindowMethod()
         {
             var newClientWindow = new AddNewClientWindow();
             SetCenterPositionAndOpen(newClientWindow);
@@ -100,7 +77,7 @@ namespace Homework12.ViewModel
         /// <summary>
         /// Метод открытия окна пополнения счёта
         /// </summary>
-        private void OpenAddFundsWindowMethod()
+        private static void OpenAddFundsWindowMethod()
         {
             var newFundWindow = new AddFundsWindow();
             SetCenterPositionAndOpen(newFundWindow);
@@ -109,7 +86,7 @@ namespace Homework12.ViewModel
         /// <summary>
         /// Метод открытия окна перевода средств
         /// </summary>
-        private void OpenTransferFundsWindowMethod()
+        private static void OpenTransferFundsWindowMethod()
         {
             var newTransferWindow = new TransferFundsWindow();
             SetCenterPositionAndOpen(newTransferWindow);

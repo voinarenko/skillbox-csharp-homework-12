@@ -55,10 +55,10 @@
                     </ListView.View>
                 </ListView>
                 <StackPanel Orientation="Horizontal" Margin="0,36,0,0">
-                    <Button x:Name="AccOpenButton" Content="Открыть" Height="27" Width="78" FontSize="10"/>
-                    <Button x:Name="AccCloseButton" Content="Закрыть" Height="27" Width="78" FontSize="10"/>
-                    <Button x:Name="AccFundButton" Content="Пополнить" Height="27" Width="78" FontSize="9" Command="{Binding OpenAddFundsWin}"/>
-                    <Button x:Name="AccTransButton" Content="Перевести" Height="27" Width="78" FontSize="9" Command="{Binding OpenTransferFundsWin}"/>
+                    <Button Content="Открыть" Height="27" Width="78" FontSize="10"/>
+                    <Button Content="Закрыть" Height="27" Width="78" FontSize="10"/>
+                    <Button Content="Пополнить" Height="27" Width="78" FontSize="9" Command="{Binding OpenAddFundsWin}"/>
+                    <Button Content="Перевести" Height="27" Width="78" FontSize="9" Command="{Binding OpenTransferFundsWin}"/>
                 </StackPanel>
             </StackPanel>
         </materialDesign:Card>
