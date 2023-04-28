@@ -18,18 +18,23 @@
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">
     <Grid>
-        <materialDesign:Card Grid.Column="0" Grid.Row="0" Padding="32" Margin="16,16,16,16">
+        <materialDesign:Card Grid.Column="0" Grid.Row="0" 
+                             Padding="32" Margin="16,16,16,16">
             <StackPanel>
-                <Label Content="ВЫБЕРИТЕ СЧЁТ И ВВЕДИТЕ СУММУ:" Height="30" HorizontalAlignment="Center" FontWeight="Bold"/>
+                <Label Content="ВЫБЕРИТЕ СЧЁТ И ВВЕДИТЕ СУММУ:" 
+                       Height="30" HorizontalAlignment="Center" FontWeight="Bold"/>
                 <StackPanel Orientation="Horizontal" Height="30">
                     <Label Content="Сумма:" Width="100" VerticalAlignment="Center"/>
-                    <TextBox x:Name="TransferSumBox" Width="150" VerticalAlignment="Center"/>
+                    <TextBox Name="BoxTransferSum" Width="150" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Height="30">
                     <Label Content="Счёт:" Width="100" VerticalAlignment="Center"/>
-                    <ComboBox x:Name="AccSelectComboBox" Height="22" Width="150" VerticalAlignment="Center"/>
+                    <ComboBox Name="AccSelectComboBox" Height="22" Width="150" VerticalAlignment="Center" 
+                              ItemsSource="{Binding AllAccounts}" 
+                              SelectedItem="{Binding AccountTarget}"/>
                 </StackPanel>
-                <Button x:Name="ClientAddOkButton" Content="OK" Height="27" Width="78" Margin="0,30,0,0" Padding="16,4,16,9"/>
+                <Button x:Name="ClientAddOkButton" Content="OK" 
+                        Height="27" Width="78" Margin="0,30,0,0" Padding="16,4,16,9"/>
             </StackPanel>
         </materialDesign:Card>
     </Grid>

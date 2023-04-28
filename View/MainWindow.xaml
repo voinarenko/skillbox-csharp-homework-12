@@ -25,40 +25,55 @@
         <materialDesign:Card Grid.Column="0" Grid.Row="0" Padding="32" Margin="16,16,8,16">
             <StackPanel>
                 <StackPanel>
-                    <Label Content="ВЫБЕРИТЕ КЛИЕНТА:" Height="30" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold"/>
+                    <Label Content="ВЫБЕРИТЕ КЛИЕНТА:" 
+                           Height="30" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold"/>
                 </StackPanel>
-                <ListView Height="340" Margin="0,28,0,0" ItemsSource="{Binding AllClients}">
+                <ListView Name="ViewAllClients"
+                          Height="340" Margin="0,28,0,0" 
+                          ItemsSource="{Binding AllClients}">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="Имя" Width="150"/>
-                            <GridViewColumn Header="Фамилия" Width="170"/>
+                            <GridViewColumn Header="Имя" Width="125" 
+                                            DisplayMemberBinding="{Binding NameFirst}"/>
+                            <GridViewColumn Header="Фамилия" Width="145" 
+                                            DisplayMemberBinding="{Binding NameLast}"/>
                         </GridView>
                     </ListView.View>
                 </ListView>
                 <StackPanel Orientation="Horizontal" Margin="0,36,0,0">
-                    <Button x:Name="ClientAddButton" Content="Добавить" Height="29" Width="156" Command="{Binding OpenAddNewClientWin}"/>
-                    <Button x:Name="ClientDelButton" Content="Удалить" Height="29" Width="156"/>
+                    <Button x:Name="ClientAddButton" Content="Добавить" 
+                            Height="29" Width="156" 
+                            Command="{Binding OpenAddNewClientWin}"/>
+                    <Button Name="ClientDelButton" Content="Удалить" Height="29" Width="156"/>
                 </StackPanel>
             </StackPanel>
         </materialDesign:Card>
-        <materialDesign:Card Grid.Column="1" Grid.Row="0" Padding="32" Margin="8,16,16,16">
-            <StackPanel x:Name="AccountManagementPanel">
+        <materialDesign:Card Grid.Column="1" Grid.Row="0" 
+                             Padding="32" Margin="8,16,16,16">
+            <StackPanel Name="AccountManagementPanel">
                 <StackPanel>
-                    <Label Content="ВЫБЕРИТЕ СЧЁТ:" Height="30" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold"/>
+                    <Label Content="ВЫБЕРИТЕ СЧЁТ:" 
+                           Height="30" HorizontalAlignment="Center" FontSize="20" FontWeight="Bold"/>
                 </StackPanel>
-                <ListView Height="340" Margin="0,28,0,0" ItemsSource="{Binding AllAccounts}">
+                <ListView Name="ViewAllAccounts" 
+                          Height="340" Margin="0,28,0,0" 
+                          ItemsSource="{Binding AllAccounts}">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="Номер счёта" Width="170"/>
-                            <GridViewColumn Header="Сумма" Width="150"/>
+                            <GridViewColumn Header="Номер счёта" Width="145" 
+                                            DisplayMemberBinding="{Binding Path=Id}"/>
+                            <GridViewColumn Header="Сумма" Width="125" 
+                                            DisplayMemberBinding="{Binding Path=Sum}"/>
                         </GridView>
                     </ListView.View>
                 </ListView>
                 <StackPanel Orientation="Horizontal" Margin="0,36,0,0">
                     <Button Content="Открыть" Height="27" Width="78" FontSize="10"/>
                     <Button Content="Закрыть" Height="27" Width="78" FontSize="10"/>
-                    <Button Content="Пополнить" Height="27" Width="78" FontSize="9" Command="{Binding OpenAddFundsWin}"/>
-                    <Button Content="Перевести" Height="27" Width="78" FontSize="9" Command="{Binding OpenTransferFundsWin}"/>
+                    <Button Content="Пополнить" Height="27" Width="78" FontSize="9" 
+                            Command="{Binding Path=OpenAddFundsWin}"/>
+                    <Button Content="Перевести" Height="27" Width="78" FontSize="9" 
+                            Command="{Binding Path=OpenTransferFundsWin}"/>
                 </StackPanel>
             </StackPanel>
         </materialDesign:Card>

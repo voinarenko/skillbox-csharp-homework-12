@@ -18,14 +18,16 @@
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">
     <Grid>
-        <materialDesign:Card Grid.Column="0" Grid.Row="0" Padding="32" Margin="16,16,16,16">
+        <materialDesign:Card Grid.Column="0" Grid.Row="0" 
+                             Padding="32" Margin="16,16,16,16">
             <StackPanel>
                 <Label Content="ВВЕДИТЕ СУММУ:" Height="30" HorizontalAlignment="Center" FontWeight="Bold"/>
                 <StackPanel Orientation="Horizontal" Height="30">
                     <Label Content="Сумма:" Width="100" VerticalAlignment="Center"/>
-                    <TextBox x:Name="FundSumBox" Width="150" VerticalAlignment="Center"/>
+                    <TextBox Name="BoxFundSum" Width="150" VerticalAlignment="Center" Text="{Binding AccountSum}"/>
                 </StackPanel>
-                <Button x:Name="ClientAddOkButton" Content="OK" Height="27" Width="78" Margin="0,60,0,0" Padding="16,4,16,9"/>
+                <Button x:Name="ClientAddOkButton" Content="OK" 
+                        Height="27" Width="78" Margin="0,60,0,0" Padding="16,4,16,9"/>
             </StackPanel>
         </materialDesign:Card>
     </Grid>

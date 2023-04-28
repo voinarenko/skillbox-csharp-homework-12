@@ -23,14 +23,16 @@
             <StackPanel>
                 <Label Content="ВВЕДИТЕ ДАННЫЕ КЛИЕНТА:" Height="30" HorizontalAlignment="Center" FontWeight="Bold"/>
                 <StackPanel Orientation="Horizontal" Height="30">
-                    <Label Content="Имя:" Width="100" VerticalAlignment="Center"/>
-                    <TextBox Name="BoxNameFirst" Width="150" VerticalAlignment="Center" Text="{Binding ClientFirstName}"/>
+                    <Label Name="BoxNameFirst" Content="Имя:" Width="100" VerticalAlignment="Center"/>
+                    <TextBox Width="150" VerticalAlignment="Center" Text="{Binding Path=ClientFirstName, Mode=TwoWay}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Height="30">
-                    <Label Content="Фамилия:" Width="100" VerticalAlignment="Center"/>
-                    <TextBox Name="BoxNameLast" Width="150" VerticalAlignment="Center" Text="{Binding ClientLastName}"/>
+                    <Label Name="BoxNameLast" Content="Фамилия:" Width="100" VerticalAlignment="Center"/>
+                    <TextBox Width="150" VerticalAlignment="Center" Text="{Binding Path=ClientLastName, Mode=TwoWay}"/>
                 </StackPanel>
-                <Button x:Name="ClientAddOkButton" Content="OK" Height="27" Width="78" Margin="0,30,0,0" Padding="16,4,16,9" Command="{Binding AddNewClient}" CommandParameter="{Binding ElementName=AddNewClientWin}"/>
+                <Button Name="ClientAddOkButton" Content="OK" 
+                        Height="27" Width="78" Margin="0,30,0,0" Padding="16,4,16,9" 
+                        Command="{Binding Path=AddNewClient}" CommandParameter="{Binding ElementName=AddNewClientWin}"/>
             </StackPanel>
         </materialDesign:Card>
     </Grid>
