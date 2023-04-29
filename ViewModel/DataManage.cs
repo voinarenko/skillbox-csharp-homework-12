@@ -1,14 +1,10 @@
-﻿using System;
-using Homework12.Model;
+﻿using Homework12.Model;
 using Homework12.View;
 using Prism.Commands;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using AddNewClientWindow = Homework12.View.AddNewClientWindow;
 
 namespace Homework12.ViewModel
 {
@@ -68,7 +64,7 @@ namespace Homework12.ViewModel
             }
         }
 
-        #endregion+
+        #endregion
 
 
         #region Обновление содержимиого списков
