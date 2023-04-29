@@ -1,18 +1,27 @@
-﻿using Homework12.Model;
+﻿using DevExpress.Mvvm;
+using Homework12.Model;
 using Homework12.View;
-using Prism.Commands;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Input;
+using DelegateCommand = Prism.Commands.DelegateCommand;
 
 namespace Homework12.ViewModel
 {
-    public class DataManage: INotifyPropertyChanged
+    public class DataManage : ViewModelBase, INotifyPropertyChanged
     {
-        /// <summary>
-        /// Список всех клиентов
-        /// </summary>
+        #region Переменные
+
+        // текущее окно
+        private static Window? _currentWindow;
+        
+        #endregion
+
+        #region Свойства
+
+        // список всех клиентов
         private List<Client> _allClients = DataBank.GetAllClients();
         public List<Client> AllClients
         {
@@ -24,9 +33,7 @@ namespace Homework12.ViewModel
             }
         }
 
-        /// <summary>
-        /// Список всех счетов
-        /// </summary>
+        // список всех счетов
         private List<Account> _allAccounts = DataBank.GetAllAccounts();
         public List<Account> AllAccounts
         {
@@ -45,27 +52,41 @@ namespace Homework12.ViewModel
         // свойства счетов
         public decimal AccountSum { get; set; }
         public int AccountTarget { get; set; }
-
+        
+        #endregion
 
         #region Команды операций с БД
 
+        // добавление клиента
         private DelegateCommand? _addNewClient;
         public DelegateCommand AddNewClient => _addNewClient ??= new DelegateCommand(AddNewClientMethod);
+        
+        #endregion
 
+        #region Методы операций с БД
+        
+        /// <summary>
+        /// Метод добавления нового клиента
+        /// </summary>
         private void AddNewClientMethod()
         {
+            CloseCommand = new DelegateCommand(Close);
             if (ClientFirstName == null || ClientFirstName.Replace(" ", "").Length == 0 || ClientLastName == null || ClientLastName.Replace(" ", "").Length == 0)
             {
             }
             else
             {
+                
+                var window = new AddNewClientWindow();
                 DataBank.AddClient(ClientFirstName, ClientLastName);
                 UpdateAllDataView();
+                SetNullValuesToProperties();
+                _currentWindow?.Close();
+                _currentWindow = null;
             }
         }
 
         #endregion
-
 
         #region Обновление содержимиого списков
 
@@ -74,7 +95,7 @@ namespace Homework12.ViewModel
         /// </summary>
         private void UpdateAllDataView()
         {
-            UpdateAllAccountsView();
+            //UpdateAllAccountsView();
             UpdateAllClientsView();
         }
 
@@ -116,28 +137,26 @@ namespace Homework12.ViewModel
 
         #endregion
 
-        #region Команды открытия окон
+        #region Команды работы с окнами
 
-        /// <summary>
-        /// Команда на открытие окна добавления нового клиента
-        /// </summary>
+        // команда на открытие окна добавления нового клиента
         private DelegateCommand? _openAddNewClientWin;
         public DelegateCommand OpenAddNewClientWin =>
             _openAddNewClientWin ??= new DelegateCommand(OpenAddNewClientWindowMethod);
 
-        /// <summary>
-        /// Команда на открытие окна пополнения счёта
-        /// </summary>
+        // команда на открытие окна пополнения счёта
         private DelegateCommand? _openAddFundsWin;
         public DelegateCommand OpenAddFundsWin =>
             _openAddFundsWin ??= new DelegateCommand(OpenAddFundsWindowMethod);
 
-        /// <summary>
-        /// Команда на открытие окна перевода средств
-        /// </summary>
+        // команда на открытие окна перевода средств
         private DelegateCommand? _openTransferFundsWin;
         public DelegateCommand OpenTransferFundsWin =>
             _openTransferFundsWin ??= new DelegateCommand(OpenTransferFundsWindowMethod);
+
+        // команда на закрытие окна
+        public ICommand? CloseCommand { get; private set; }
+        protected ICurrentWindowService CurrentWindowService => GetService<ICurrentWindowService>();
 
         #endregion
 
@@ -176,6 +195,7 @@ namespace Homework12.ViewModel
         /// <param name="window">окно</param>
         private static void SetCenterPositionAndOpen(Window window)
         {
+            _currentWindow = window;
             window.Owner = Application.Current.MainWindow;
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.ShowDialog();
@@ -185,23 +205,22 @@ namespace Homework12.ViewModel
 
         #region Вспомогательные методы
 
-
+        /// <summary>
+        /// Закрытие окна
+        /// </summary>
+        private void Close()
+        {
+            CurrentWindowService.Close();
+        }
 
         #endregion
 
         #region INofifyPropertyChanged
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public new event PropertyChangedEventHandler? PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-        protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
-        {
-            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-            field = value;
-            OnPropertyChanged(propertyName);
-            return true;
         }
 
         #endregion
