@@ -81,9 +81,8 @@ namespace Homework12.Model
         /// </summary>
         /// <param name="client">клиент</param>
         /// <returns>результат выполнения</returns>
-        public static string OpenAccount(Client client)
+        public static void OpenAccount(Client client)
         {
-            const string result = "Счёт открыт!";
             using var db = new ApplicationContext();
             var generated = GenerateAccountNumber();
 
@@ -99,8 +98,6 @@ namespace Homework12.Model
             var newAccount = new Account { Id = generated, ClientId = client.Id };
             db.Accounts?.Add(newAccount);
             db.SaveChanges();
-
-            return result;
         }
 
         /// <summary>
@@ -108,16 +105,12 @@ namespace Homework12.Model
         /// </summary>
         /// <param name="account">счёт</param>
         /// <returns>результат выполнения</returns>
-        public static string CloseAccount(Account account)
+        public static void CloseAccount(Account account)
         {
-            var result = "Удаление невозможно!";
             using var db = new ApplicationContext();
 
             db.Accounts?.Remove(account);
             db.SaveChanges();
-            result = $"Счёт N{account.Id} удален!";
-            
-            return result;
         }
 
         /// <summary>
@@ -126,18 +119,14 @@ namespace Homework12.Model
         /// <param name="oldAccount">счёт</param>
         /// <param name="newSum">сумма</param>
         /// <returns>результат выполнения</returns>
-        public static string FundAccount(Account oldAccount, decimal newSum)
+        public static void FundAccount(Account oldAccount, decimal newSum)
         {
-            var result = "Пополнение невозможно!";
             using var db = new ApplicationContext();
 
             var account = db.Accounts?.FirstOrDefault(a => a.Id == oldAccount.Id);
-            if (account == null) return result;
+            if (account == null) return;
             account.Sum += newSum;
             db.SaveChanges();
-            result = $"Счёт N{account.Id} пополнен на {newSum} монет!";
-
-            return result;
         }
 
 
@@ -148,21 +137,17 @@ namespace Homework12.Model
         /// <param name="accountTo">счёт получатель</param>
         /// <param name="newSum">сумма</param>
         /// <returns>результат выполнения</returns>
-        public static string TransferFunds(Account accountFrom, Account accountTo, decimal newSum)
+        public static void TransferFunds(Account accountFrom, Account accountTo, decimal newSum)
         {
-            var result = "Пополнение невозможно!";
             using var db = new ApplicationContext();
 
             var account = db.Accounts?.FirstOrDefault(a => a.Id == accountFrom.Id);
             var targetAccount = db.Accounts?.FirstOrDefault(b => b.Id == accountTo.Id);
-            if (account == null) return result;
+            if (account == null) return;
             account.Sum -= newSum;
-            if (targetAccount == null) return result;
+            if (targetAccount == null) return;
             targetAccount.Sum += newSum;
             db.SaveChanges();
-            result = $"Со счёта N{account.Id} переведено {newSum} монет на счёт N{targetAccount.Id}!";
-
-            return result;
         }
 
         /// <summary>
@@ -175,6 +160,20 @@ namespace Homework12.Model
             const int max = 9999;
             var rdm = new Random();
             return rdm.Next(min, max);
+        }
+
+        /// <summary>
+        /// Получение списка счетов по id клиента
+        /// </summary>
+        /// <param name="id">id клиента</param>
+        /// <returns>список счетов клиента</returns>
+        public static List<Account> GetAllAccountsByClientId(int id)
+        {
+            using var db = new ApplicationContext();
+            {
+                List<Account> accounts = (from account in GetAllAccounts() where account.ClientId == id select account).ToList();
+                return accounts;
+            }
         }
     }
 }
