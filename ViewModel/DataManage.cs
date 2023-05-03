@@ -1,4 +1,5 @@
-﻿using DevExpress.Mvvm;
+﻿using System;
+using DevExpress.Mvvm;
 using Homework12.Model;
 using Homework12.View;
 using System.Collections.Generic;
@@ -51,16 +52,43 @@ namespace Homework12.ViewModel
 
         // свойства счетов
         public decimal AccountSum { get; set; }
-        public int AccountTarget { get; set; }
+        public Account? AccountTarget { get; set; }
+
+        // свойства для выделенных элементов
+        public static Client? SelectedClient { get; set; }
+        public static Account? SelectedAccount { get; set; }
         
         #endregion
 
         #region Команды операций с БД
+        //
+        private DelegateCommand? _refreshAccounts;
+        public DelegateCommand RefreshAccounts => _refreshAccounts ??= new DelegateCommand(UpdateAccountsCheckMethod);
 
         // добавление клиента
         private DelegateCommand? _addNewClient;
         public DelegateCommand AddNewClient => _addNewClient ??= new DelegateCommand(AddNewClientMethod);
-        
+
+        // открытие счёта
+        private DelegateCommand? _openNewAccount;
+        public DelegateCommand OpenNewAccount => _openNewAccount ??= new DelegateCommand(OpenNewAccountMethod);
+
+        // удаление клиента
+        private DelegateCommand? _deleteClient;
+        public DelegateCommand DeleteClient => _deleteClient ??= new DelegateCommand(DeleteClientMethod);
+
+        // закрытие счёта
+        private DelegateCommand? _closeAccount;
+        public DelegateCommand CloseAccount => _closeAccount ??= new DelegateCommand(CloseAccountMethod);
+
+        // пополнение счёта
+        private DelegateCommand? _fundAccount;
+        public DelegateCommand FundAccount => _fundAccount ??= new DelegateCommand(FundAccountMethod);
+
+        // перевод средств
+        private DelegateCommand? _transferFunds;
+        public DelegateCommand TransferFunds => _transferFunds ??= new DelegateCommand(TransferFundsMethod);
+
         #endregion
 
         #region Методы операций с БД
@@ -71,33 +99,70 @@ namespace Homework12.ViewModel
         private void AddNewClientMethod()
         {
             CloseCommand = new DelegateCommand(Close);
-            if (ClientFirstName == null || ClientFirstName.Replace(" ", "").Length == 0 || ClientLastName == null || ClientLastName.Replace(" ", "").Length == 0)
-            {
-            }
-            else
-            {
-                
-                var window = new AddNewClientWindow();
+            if (ClientFirstName == null || ClientFirstName.Replace(" ", "").Length == 0 || ClientLastName == null || ClientLastName.Replace(" ", "").Length == 0) return;
                 DataBank.AddClient(ClientFirstName, ClientLastName);
-                UpdateAllDataView();
-                SetNullValuesToProperties();
+                UpdateAllClientsView();
                 _currentWindow?.Close();
                 _currentWindow = null;
-            }
         }
 
+        /// <summary>
+        /// Метод добавления нового счёта
+        /// </summary>
+        private void OpenNewAccountMethod()
+        {
+            if (SelectedClient == null) return;
+            DataBank.OpenAccount(SelectedClient);
+            UpdateAllAccountsView(SelectedClient);
+        }
+
+        /// <summary>
+        /// Метод удаления клиента
+        /// </summary>
+        private void DeleteClientMethod()
+        {
+            if (SelectedClient == null) return;
+            DataBank.DeleteClient(SelectedClient);
+            UpdateAllClientsView();
+            UpdateAllAccountsView(SelectedClient);
+        }
+
+        /// <summary>
+        /// Метод закрытия счёта
+        /// </summary>
+        private void CloseAccountMethod()
+        {
+            if (SelectedAccount == null) return;
+            DataBank.CloseAccount(SelectedAccount);
+            if (SelectedClient != null) UpdateAllAccountsView(SelectedClient);
+        }
+
+        /// <summary>
+        /// Метод пополнения счёта
+        /// </summary>
+        private void FundAccountMethod()
+        {
+            CloseCommand = new DelegateCommand(Close);
+            DataBank.FundAccount(SelectedAccount, Convert.ToDecimal(AccountSum));
+            UpdateAllAccountsView(SelectedClient);
+            _currentWindow?.Close();
+            _currentWindow = null;
+        }
+
+        /// <summary>
+        /// Метод перевода средств
+        /// </summary>
+        private void TransferFundsMethod()
+        {
+            CloseCommand = new DelegateCommand(Close);
+            DataBank.TransferFunds(SelectedAccount, AccountTarget, Convert.ToDecimal(AccountSum));
+            UpdateAllAccountsView(SelectedClient);
+            _currentWindow?.Close();
+            _currentWindow = null;
+        }
         #endregion
 
         #region Обновление содержимиого списков
-
-        /// <summary>
-        /// Обновление всех списков сразу
-        /// </summary>
-        private void UpdateAllDataView()
-        {
-            //UpdateAllAccountsView();
-            UpdateAllClientsView();
-        }
 
         /// <summary>
         /// Обновление списка клиентов
@@ -113,26 +178,33 @@ namespace Homework12.ViewModel
         }
 
         /// <summary>
-        /// Обновление списка счетов
+        /// Промежуточный метод обновления списка счетов
         /// </summary>
-        private void UpdateAllAccountsView()
+        private void UpdateAccountsCheckMethod()
         {
-            AllAccounts = DataBank.GetAllAccounts();
-            if (MainWindow.AllAccountsView == null) return;
-            MainWindow.AllAccountsView.ItemsSource = null;
-            MainWindow.AllAccountsView.Items.Clear();
-            MainWindow.AllAccountsView.ItemsSource = AllClients;
-            MainWindow.AllAccountsView.Items.Refresh();
+            if (SelectedClient == null)
+            {
+                if (MainWindow.AllAccountsView != null) MainWindow.AllAccountsView.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                if (MainWindow.AllAccountsView != null) MainWindow.AllAccountsView.Visibility = Visibility.Visible;
+                UpdateAllAccountsView(SelectedClient);
+            }
         }
 
-        private void SetNullValuesToProperties()
+        /// <summary>
+        /// Обновление списка счетов
+        /// </summary>
+        private void UpdateAllAccountsView(Client? client)
         {
-            // для клиента
-            ClientFirstName = null;
-            ClientLastName = null;
-
-            //для счёта
-            
+                if (client == null) return;
+                AllAccounts = DataBank.GetAllAccountsByClientId(client.Id);
+                if (MainWindow.AllAccountsView == null) return;
+                MainWindow.AllAccountsView.ItemsSource = null;
+                MainWindow.AllAccountsView.Items.Clear();
+                MainWindow.AllAccountsView.ItemsSource = AllAccounts;
+                MainWindow.AllAccountsView.Items.Refresh();
         }
 
         #endregion
@@ -147,7 +219,7 @@ namespace Homework12.ViewModel
         // команда на открытие окна пополнения счёта
         private DelegateCommand? _openAddFundsWin;
         public DelegateCommand OpenAddFundsWin =>
-            _openAddFundsWin ??= new DelegateCommand(OpenAddFundsWindowMethod);
+            _openAddFundsWin ??= new DelegateCommand(OpenAddFundsWindowCheckMethod);
 
         // команда на открытие окна перевода средств
         private DelegateCommand? _openTransferFundsWin;
@@ -172,10 +244,19 @@ namespace Homework12.ViewModel
         }
 
         /// <summary>
+        /// Промежуточный метод проверки, выделен ли пользователь, для открытия окна пополнения счёта
+        /// </summary>
+        private static void OpenAddFundsWindowCheckMethod()
+        {
+            OpenAddFundsWindowMethod(SelectedClient, SelectedAccount);
+        }
+
+        /// <summary>
         /// Метод открытия окна пополнения счёта
         /// </summary>
-        private static void OpenAddFundsWindowMethod()
+        private static void OpenAddFundsWindowMethod(Client? client, Account? account)
         {
+            if (client == null || account == null) return;
             var newFundWindow = new AddFundsWindow();
             SetCenterPositionAndOpen(newFundWindow);
         }

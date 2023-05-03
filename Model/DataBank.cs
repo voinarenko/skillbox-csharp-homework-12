@@ -43,20 +43,16 @@ namespace Homework12.Model
         /// <param name="nameFirst">имя клиента</param>
         /// <param name="nameLast">фамилия клиента</param>
         /// <returns>результат выполнения</returns>
-        public static string AddClient(string nameFirst, string nameLast)
+        public static void AddClient(string nameFirst, string nameLast)
         {
-            var result = "Клиент уже существует!";
             using var db = new ApplicationContext();
 
             // проверка существования записи
             var clientExists = db.Clients != null && db.Clients.Any(c => c.NameFirst == nameFirst && c.NameLast == nameLast);
-            if (clientExists) return result;
+            if (clientExists) return;
             var newClient = new Client { NameFirst = nameFirst, NameLast = nameLast };
             db.Clients?.Add(newClient);
             db.SaveChanges();
-            result = "Запись добавлена!";
-
-            return result;
         }
 
         /// <summary>
@@ -64,16 +60,12 @@ namespace Homework12.Model
         /// </summary>
         /// <param name="client">клиент</param>
         /// <returns>результат выполнения</returns>
-        public static string DeleteClient(Client client)
+        public static void DeleteClient(Client client)
         {
-            var result = "Удаление невозможно";
             using var db = new ApplicationContext();
 
             db.Clients?.Remove(client);
             db.SaveChanges();
-            result = $"Клиент {client.NameFirst} {client.NameLast} удален!";
-            
-            return result;
         }
 
         /// <summary>
@@ -89,13 +81,13 @@ namespace Homework12.Model
             // проверка существования записи и генерация нового номера
             for (; ; )
             {
-                var accountExists = db.Accounts != null && db.Accounts.Any(a => a.Id == generated);
+                var accountExists = db.Accounts != null && db.Accounts.Any(a => a.Number == generated);
                 if (!accountExists) break;
                 generated = GenerateAccountNumber();
             }
             
             // открытие нового счёта
-            var newAccount = new Account { Id = generated, ClientId = client.Id };
+            var newAccount = new Account { Number = generated, Sum = 0, ClientId = client.Id };
             db.Accounts?.Add(newAccount);
             db.SaveChanges();
         }
@@ -119,11 +111,11 @@ namespace Homework12.Model
         /// <param name="oldAccount">счёт</param>
         /// <param name="newSum">сумма</param>
         /// <returns>результат выполнения</returns>
-        public static void FundAccount(Account oldAccount, decimal newSum)
+        public static void FundAccount(Account? oldAccount, decimal newSum)
         {
             using var db = new ApplicationContext();
 
-            var account = db.Accounts?.FirstOrDefault(a => a.Id == oldAccount.Id);
+            var account = db.Accounts?.FirstOrDefault(a => oldAccount != null && a.Number == oldAccount.Number);
             if (account == null) return;
             account.Sum += newSum;
             db.SaveChanges();
@@ -137,12 +129,12 @@ namespace Homework12.Model
         /// <param name="accountTo">счёт получатель</param>
         /// <param name="newSum">сумма</param>
         /// <returns>результат выполнения</returns>
-        public static void TransferFunds(Account accountFrom, Account accountTo, decimal newSum)
+        public static void TransferFunds(Account? accountFrom, Account? accountTo, decimal newSum)
         {
             using var db = new ApplicationContext();
 
-            var account = db.Accounts?.FirstOrDefault(a => a.Id == accountFrom.Id);
-            var targetAccount = db.Accounts?.FirstOrDefault(b => b.Id == accountTo.Id);
+            var account = db.Accounts?.FirstOrDefault(a => a.Number == accountFrom!.Number);
+            var targetAccount = db.Accounts?.FirstOrDefault(b => b.Number == accountTo!.Number);
             if (account == null) return;
             account.Sum -= newSum;
             if (targetAccount == null) return;

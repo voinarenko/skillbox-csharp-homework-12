@@ -29,21 +29,24 @@
                 </StackPanel>
                 <ListView Name="ViewAllClients"
                           Height="340" Margin="0,28,0,0" 
-                          ItemsSource="{Binding AllClients}">
+                          ItemsSource="{Binding Path=AllClients}"
+                          SelectedItem="{Binding Path=SelectedClient}"
+                          SelectionChanged="ViewAllClients_OnSelectionChanged">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Имя" Width="125" 
-                                            DisplayMemberBinding="{Binding NameFirst}"/>
+                                            DisplayMemberBinding="{Binding Path=NameFirst}"/>
                             <GridViewColumn Header="Фамилия" Width="145" 
-                                            DisplayMemberBinding="{Binding NameLast}"/>
+                                            DisplayMemberBinding="{Binding Path=NameLast}"/>
                         </GridView>
                     </ListView.View>
                 </ListView>
                 <StackPanel Orientation="Horizontal" Margin="0,36,0,0">
                     <Button x:Name="ClientAddButton" Content="Добавить" 
                             Height="29" Width="156" 
-                            Command="{Binding OpenAddNewClientWin}"/>
-                    <Button Name="ClientDelButton" Content="Удалить" Height="29" Width="156"/>
+                            Command="{Binding Path=OpenAddNewClientWin}"/>
+                    <Button Name="ClientDelButton" Content="Удалить" Height="29" Width="156"
+                            Command="{Binding Path=DeleteClient}"/>
                 </StackPanel>
             </StackPanel>
         </materialDesign:Card>
@@ -56,19 +59,23 @@
                 </StackPanel>
                 <ListView Name="ViewAllAccounts" 
                           Height="340" Margin="0,28,0,0" 
-                          ItemsSource="{Binding AccountClients}">
+                          ItemsSource="{Binding Path=AllAccounts}"
+                          SelectedItem="{Binding Path=SelectedAccount}"
+                          Visibility="Hidden">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Номер счёта" Width="145" 
-                                            DisplayMemberBinding="{Binding Path=Id}"/>
+                                            DisplayMemberBinding="{Binding Path=Number}"/>
                             <GridViewColumn Header="Сумма" Width="125" 
                                             DisplayMemberBinding="{Binding Path=Sum}"/>
                         </GridView>
                     </ListView.View>
                 </ListView>
                 <StackPanel Orientation="Horizontal" Margin="0,36,0,0">
-                    <Button Content="Открыть" Height="27" Width="78" FontSize="10"/>
-                    <Button Content="Закрыть" Height="27" Width="78" FontSize="10"/>
+                    <Button Content="Открыть" Height="27" Width="78" FontSize="10"
+                            Command="{Binding Path=OpenNewAccount}"/>
+                    <Button Content="Закрыть" Height="27" Width="78" FontSize="10"
+                            Command="{Binding Path=CloseAccount}"/>
                     <Button Content="Пополнить" Height="27" Width="78" FontSize="9" 
                             Command="{Binding Path=OpenAddFundsWin}"/>
                     <Button Content="Перевести" Height="27" Width="78" FontSize="9" 

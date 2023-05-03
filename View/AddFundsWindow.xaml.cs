@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Homework12.ViewModel;
+using System.Windows;
 
 namespace Homework12.View
 {
@@ -10,6 +11,7 @@ namespace Homework12.View
         public AddFundsWindow()
         {
             InitializeComponent();
+            DataContext = new DataManage();
         }
     }
 }

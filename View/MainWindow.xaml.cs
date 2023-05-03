@@ -22,5 +22,11 @@ namespace Homework12.View
             AllClientsView = ViewAllClients;
             AllAccountsView = ViewAllAccounts;
         }
+
+        private void ViewAllClients_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var vm = (DataManage)DataContext;
+            vm.RefreshAccounts.Execute();
+        }
     }
 }

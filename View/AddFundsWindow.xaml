@@ -15,6 +15,7 @@
         FontFamily="{DynamicResource MaterialDesignFont}"
         mc:Ignorable="d"
         Title="Пополнение счёта" Height="290" Width="370"
+        Name="AddFundsWin"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">
     <Grid>
@@ -24,10 +25,12 @@
                 <Label Content="ВВЕДИТЕ СУММУ:" Height="30" HorizontalAlignment="Center" FontWeight="Bold"/>
                 <StackPanel Orientation="Horizontal" Height="30">
                     <Label Content="Сумма:" Width="100" VerticalAlignment="Center"/>
-                    <TextBox Name="BoxFundSum" Width="150" VerticalAlignment="Center" Text="{Binding AccountSum}"/>
+                    <TextBox Name="BoxFundSum" Width="150" VerticalAlignment="Center" 
+                             Text="{Binding Path=AccountSum, Mode=TwoWay}"/>
                 </StackPanel>
-                <Button x:Name="ClientAddOkButton" Content="OK" 
-                        Height="27" Width="78" Margin="0,60,0,0" Padding="16,4,16,9"/>
+                <Button Name="AddFundsOkButton" Content="OK" 
+                        Height="27" Width="78" Margin="0,60,0,0" Padding="16,4,16,9"
+                        Command="{Binding Path=FundAccount}" CommandParameter="{Binding ElementName=AddFundsWin}"/>
             </StackPanel>
         </materialDesign:Card>
     </Grid>

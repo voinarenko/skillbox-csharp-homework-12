@@ -15,6 +15,7 @@
         FontFamily="{DynamicResource MaterialDesignFont}"
         mc:Ignorable="d"
         Title="Перевод средств" Height="290" Width="370"
+        Name="TransferFundsWin"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">
     <Grid>
@@ -25,16 +26,19 @@
                        Height="30" HorizontalAlignment="Center" FontWeight="Bold"/>
                 <StackPanel Orientation="Horizontal" Height="30">
                     <Label Content="Сумма:" Width="100" VerticalAlignment="Center"/>
-                    <TextBox Name="BoxTransferSum" Width="150" VerticalAlignment="Center"/>
+                    <TextBox Name="BoxTransferSum" Width="150" VerticalAlignment="Center"
+                             Text="{Binding Path=AccountSum, Mode=TwoWay}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Height="30">
-                    <Label Content="Счёт:" Width="100" VerticalAlignment="Center"/>
+                    <Label Content="На счёт:" Width="100" VerticalAlignment="Center"/>
                     <ComboBox Name="AccSelectComboBox" Height="22" Width="150" VerticalAlignment="Center" 
-                              ItemsSource="{Binding AllAccounts}" 
-                              SelectedItem="{Binding AccountTarget}"/>
+                              ItemsSource="{Binding Path=SelectedAccounts}"
+                              
+                              SelectedItem="{Binding Path=AccountTarget}"/>
                 </StackPanel>
                 <Button x:Name="ClientAddOkButton" Content="OK" 
-                        Height="27" Width="78" Margin="0,30,0,0" Padding="16,4,16,9"/>
+                        Height="27" Width="78" Margin="0,30,0,0" Padding="16,4,16,9"
+                        Command="{Binding Path=TransferFunds}" CommandParameter="{Binding ElementName=TransferFundsWin}"/>
             </StackPanel>
         </materialDesign:Card>
     </Grid>
