@@ -23,7 +23,7 @@
                              Padding="32" Margin="16,16,16,16">
             <StackPanel>
                 <Label Content="ВЫБЕРИТЕ СЧЁТ И ВВЕДИТЕ СУММУ:" 
-                       Height="30" HorizontalAlignment="Center" FontWeight="Bold"/>
+                       Height="30" HorizontalAlignment="Center" FontSize="10" FontWeight="Bold"/>
                 <StackPanel Orientation="Horizontal" Height="30">
                     <Label Content="Сумма:" Width="100" VerticalAlignment="Center"/>
                     <TextBox Name="BoxTransferSum" Width="150" VerticalAlignment="Center"
@@ -31,9 +31,9 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Height="30">
                     <Label Content="На счёт:" Width="100" VerticalAlignment="Center"/>
-                    <ComboBox Name="AccSelectComboBox" Height="22" Width="150" VerticalAlignment="Center" 
+                    <ComboBox Name="AccSelectComboBox" Height="26" Width="150" VerticalAlignment="Center" 
                               ItemsSource="{Binding Path=SelectedAccounts}"
-                              
+                              DisplayMemberPath="Number"
                               SelectedItem="{Binding Path=AccountTarget}"/>
                 </StackPanel>
                 <Button x:Name="ClientAddOkButton" Content="OK" 

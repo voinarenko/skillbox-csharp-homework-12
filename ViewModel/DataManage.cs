@@ -46,6 +46,9 @@ namespace Homework12.ViewModel
             }
         }
 
+        // счета, отобранные по ID клиента
+        public static List<Account>? SelectedAccounts { get; set; }
+
         // свойства клиентов
         public string? ClientFirstName { get; set; }
         public string? ClientLastName { get; set; }
@@ -219,7 +222,7 @@ namespace Homework12.ViewModel
         // команда на открытие окна пополнения счёта
         private DelegateCommand? _openAddFundsWin;
         public DelegateCommand OpenAddFundsWin =>
-            _openAddFundsWin ??= new DelegateCommand(OpenAddFundsWindowCheckMethod);
+            _openAddFundsWin ??= new DelegateCommand(OpenAddFundsWindowMethod);
 
         // команда на открытие окна перевода средств
         private DelegateCommand? _openTransferFundsWin;
@@ -232,7 +235,7 @@ namespace Homework12.ViewModel
 
         #endregion
 
-        #region Методы открытия окон
+        #region Методы работы с окнами
 
         /// <summary>
         /// Метод открытия окна добавления нового клиента
@@ -244,19 +247,11 @@ namespace Homework12.ViewModel
         }
 
         /// <summary>
-        /// Промежуточный метод проверки, выделен ли пользователь, для открытия окна пополнения счёта
-        /// </summary>
-        private static void OpenAddFundsWindowCheckMethod()
-        {
-            OpenAddFundsWindowMethod(SelectedClient, SelectedAccount);
-        }
-
-        /// <summary>
         /// Метод открытия окна пополнения счёта
         /// </summary>
-        private static void OpenAddFundsWindowMethod(Client? client, Account? account)
+        private static void OpenAddFundsWindowMethod()
         {
-            if (client == null || account == null) return;
+            if (SelectedClient == null || SelectedAccount == null) return;
             var newFundWindow = new AddFundsWindow();
             SetCenterPositionAndOpen(newFundWindow);
         }
@@ -266,6 +261,10 @@ namespace Homework12.ViewModel
         /// </summary>
         private static void OpenTransferFundsWindowMethod()
         {
+            if (SelectedClient == null || SelectedAccount == null) return;
+            var donorAccount = SelectedAccount.Number;
+            SelectedAccounts = DataBank.GetAllAccountsByClientId(SelectedClient.Id);
+            SelectedAccounts.RemoveAll(a => a.Number == donorAccount);
             var newTransferWindow = new TransferFundsWindow();
             SetCenterPositionAndOpen(newTransferWindow);
         }
@@ -282,10 +281,6 @@ namespace Homework12.ViewModel
             window.ShowDialog();
         }
         
-        #endregion
-
-        #region Вспомогательные методы
-
         /// <summary>
         /// Закрытие окна
         /// </summary>
