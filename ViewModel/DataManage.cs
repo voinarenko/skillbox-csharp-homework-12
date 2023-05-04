@@ -30,7 +30,7 @@ namespace Homework12.ViewModel
             set
             {
                 _allClients = value;
-                OnPropertyChanged("AllClients");
+                OnPropertyChanged();
             }
         }
 
@@ -42,7 +42,7 @@ namespace Homework12.ViewModel
             set
             {
                 _allAccounts = value;
-                OnPropertyChanged("AllAccounts");
+                OnPropertyChanged();
             }
         }
 
