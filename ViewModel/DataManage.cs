@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using static Homework12.Model.DataBank;
 using DelegateCommand = Prism.Commands.DelegateCommand;
 
 namespace Homework12.ViewModel
@@ -23,7 +24,7 @@ namespace Homework12.ViewModel
         #region Свойства
 
         // список всех клиентов
-        private List<Client> _allClients = DataBank.GetAllClients();
+        private List<Client> _allClients = GetAllClients();
         public List<Client> AllClients
         {
             get => _allClients;
@@ -35,7 +36,7 @@ namespace Homework12.ViewModel
         }
 
         // список всех счетов
-        private List<Account> _allAccounts = DataBank.GetAllAccounts();
+        private List<Account> _allAccounts = GetAllAccounts();
         public List<Account> AllAccounts
         {
             get => _allAccounts;
@@ -103,7 +104,7 @@ namespace Homework12.ViewModel
         {
             CloseCommand = new DelegateCommand(Close);
             if (ClientFirstName == null || ClientFirstName.Replace(" ", "").Length == 0 || ClientLastName == null || ClientLastName.Replace(" ", "").Length == 0) return;
-                DataBank.AddClient(ClientFirstName, ClientLastName);
+                AddClient(ClientFirstName, ClientLastName);
                 UpdateAllClientsView();
                 _currentWindow?.Close();
                 _currentWindow = null;
@@ -115,7 +116,7 @@ namespace Homework12.ViewModel
         private void OpenNewAccountMethod()
         {
             if (SelectedClient == null) return;
-            DataBank.OpenAccount(SelectedClient);
+            OpenAccount(SelectedClient);
             UpdateAllAccountsView(SelectedClient);
         }
 
@@ -125,7 +126,7 @@ namespace Homework12.ViewModel
         private void DeleteClientMethod()
         {
             if (SelectedClient == null) return;
-            DataBank.DeleteClient(SelectedClient);
+            DeleteClient(SelectedClient);
             UpdateAllClientsView();
             UpdateAllAccountsView(SelectedClient);
         }
@@ -136,7 +137,7 @@ namespace Homework12.ViewModel
         private void CloseAccountMethod()
         {
             if (SelectedAccount == null) return;
-            DataBank.CloseAccount(SelectedAccount);
+            CloseAccount(SelectedAccount);
             if (SelectedClient != null) UpdateAllAccountsView(SelectedClient);
         }
 
@@ -146,7 +147,7 @@ namespace Homework12.ViewModel
         private void FundAccountMethod()
         {
             CloseCommand = new DelegateCommand(Close);
-            DataBank.FundAccount(SelectedAccount, Convert.ToDecimal(AccountSum));
+            FundAccount(SelectedAccount, Convert.ToDecimal(AccountSum));
             UpdateAllAccountsView(SelectedClient);
             _currentWindow?.Close();
             _currentWindow = null;
@@ -158,7 +159,7 @@ namespace Homework12.ViewModel
         private void TransferFundsMethod()
         {
             CloseCommand = new DelegateCommand(Close);
-            DataBank.TransferFunds(SelectedAccount, AccountTarget, Convert.ToDecimal(AccountSum));
+            TransferFunds(SelectedAccount, AccountTarget, Convert.ToDecimal(AccountSum));
             UpdateAllAccountsView(SelectedClient);
             _currentWindow?.Close();
             _currentWindow = null;
@@ -172,7 +173,7 @@ namespace Homework12.ViewModel
         /// </summary>
         private void UpdateAllClientsView()
         {
-            AllClients = DataBank.GetAllClients();
+            AllClients = GetAllClients();
             if (MainWindow.AllClientsView == null) return;
             MainWindow.AllClientsView.ItemsSource = null;
             MainWindow.AllClientsView.Items.Clear();
@@ -202,7 +203,7 @@ namespace Homework12.ViewModel
         private void UpdateAllAccountsView(Client? client)
         {
                 if (client == null) return;
-                AllAccounts = DataBank.GetAllAccountsByClientId(client.Id);
+                AllAccounts = GetAllAccountsByClientId(client.Id);
                 if (MainWindow.AllAccountsView == null) return;
                 MainWindow.AllAccountsView.ItemsSource = null;
                 MainWindow.AllAccountsView.Items.Clear();
@@ -263,7 +264,7 @@ namespace Homework12.ViewModel
         {
             if (SelectedClient == null || SelectedAccount == null) return;
             var donorAccount = SelectedAccount.Number;
-            SelectedAccounts = DataBank.GetAllAccountsByClientId(SelectedClient.Id);
+            SelectedAccounts = GetAllAccountsByClientId(SelectedClient.Id);
             SelectedAccounts.RemoveAll(a => a.Number == donorAccount);
             var newTransferWindow = new TransferFundsWindow();
             SetCenterPositionAndOpen(newTransferWindow);

@@ -5,6 +5,11 @@ using System.Linq;
 
 namespace Homework12.Model
 {
+    public enum AccountType
+    {
+        NonDeposit,
+        Deposit
+    }
     public static class DataBank
     {
         /// <summary>
@@ -87,10 +92,23 @@ namespace Homework12.Model
             }
             
             // открытие нового счёта
-            var newAccount = new Account { Number = generated, Sum = 0, ClientId = client.Id };
-            db.Accounts?.Add(newAccount);
+            var newAccount = SelectAccountType(generated, 0, client.Id, AccountType.NonDeposit);
+            if (newAccount != null) db.Accounts?.Add(newAccount);
             db.SaveChanges();
         }
+        
+        public static Account? SelectAccountType(int number, decimal sum, int clientId, AccountType accountType)
+        {
+            Account? newAccount = accountType switch
+            {
+                AccountType.NonDeposit => new NonDepositAccount(number, sum, clientId, accountType),
+                AccountType.Deposit => new DepositAccount(number, sum, clientId, accountType),
+                _ => null
+            };
+
+            return newAccount;
+        }
+
 
         /// <summary>
         /// Закрытие счёта
