@@ -165,7 +165,6 @@ namespace Homework12.Model
             db.SaveChanges();
         }
 
-
         /// <summary>
         /// Перевод средств
         /// </summary>
