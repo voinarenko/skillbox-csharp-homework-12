@@ -21,7 +21,8 @@ namespace Homework12.ViewModel
 
         // текущее окно
         private static Window? _currentWindow;
-        
+        private static Window? _infoWindow;
+
         #endregion
 
         #region Свойства
@@ -66,6 +67,9 @@ namespace Homework12.ViewModel
         public static Client? SelectedClient { get; set; }
         public static Account? SelectedAccount { get; set; }
         
+        // информационная строка
+        public static string? InfoText { get; set; }
+
         #endregion
 
         #region Передача данных типов счёта в ComboBox
@@ -88,31 +92,38 @@ namespace Homework12.ViewModel
         #region Команды операций с БД
         //
         private DelegateCommand? _refreshAccounts;
-        public DelegateCommand RefreshAccounts => _refreshAccounts ??= new DelegateCommand(UpdateAccountsCheckMethod);
+        public DelegateCommand RefreshAccounts => 
+            _refreshAccounts ??= new DelegateCommand(UpdateAccountsCheckMethod);
 
         // добавление клиента
         private DelegateCommand? _addNewClient;
-        public DelegateCommand AddNewClient => _addNewClient ??= new DelegateCommand(AddNewClientMethod);
+        public DelegateCommand AddNewClient => 
+            _addNewClient ??= new DelegateCommand(AddNewClientMethod);
 
         // открытие счёта
         private DelegateCommand? _openNewAccount;
-        public DelegateCommand OpenNewAccount => _openNewAccount ??= new DelegateCommand(OpenNewAccountMethod);
+        public DelegateCommand OpenNewAccount => 
+            _openNewAccount ??= new DelegateCommand(OpenNewAccountMethod);
 
         // удаление клиента
         private DelegateCommand? _deleteClient;
-        public DelegateCommand DeleteClient => _deleteClient ??= new DelegateCommand(DeleteClientMethod);
+        public DelegateCommand DeleteClient => 
+            _deleteClient ??= new DelegateCommand(DeleteClientMethod);
 
         // закрытие счёта
         private DelegateCommand? _closeAccount;
-        public DelegateCommand CloseAccount => _closeAccount ??= new DelegateCommand(CloseAccountMethod);
+        public DelegateCommand CloseAccount => 
+            _closeAccount ??= new DelegateCommand(CloseAccountMethod);
 
         // пополнение счёта
         private DelegateCommand? _fundAccount;
-        public DelegateCommand FundAccount => _fundAccount ??= new DelegateCommand(FundAccountMethod);
+        public DelegateCommand FundAccount => 
+            _fundAccount ??= new DelegateCommand(FundAccountMethod);
 
         // перевод средств
         private DelegateCommand? _transferFunds;
-        public DelegateCommand TransferFunds => _transferFunds ??= new DelegateCommand(TransferFundsMethod);
+        public DelegateCommand TransferFunds => 
+            _transferFunds ??= new DelegateCommand(TransferFundsMethod);
 
         #endregion
 
@@ -138,7 +149,8 @@ namespace Homework12.ViewModel
         {
             CloseCommand = new DelegateCommand(Close);
             if (SelectedClient == null) return;
-            OpenAccount(SelectedClient, AccType);
+            InfoText = OpenAccount(SelectedClient, AccType);
+            OpenInfoWindowMethod();
             UpdateAllAccountsView(SelectedClient);
             _currentWindow?.Close();
             _currentWindow = null;
@@ -246,7 +258,8 @@ namespace Homework12.ViewModel
 
         // команда на открытие окна открытия нового счёта
         private DelegateCommand? _openOpenNewAccountWin;
-        public DelegateCommand OpenOpenNewAccountWin => _openOpenNewAccountWin ??= new DelegateCommand(OpenNewAccountWindowMethod);
+        public DelegateCommand OpenOpenNewAccountWin => 
+            _openOpenNewAccountWin ??= new DelegateCommand(OpenNewAccountWindowMethod);
 
         // команда на открытие окна пополнения счёта
         private DelegateCommand? _openAddFundsWin;
@@ -257,6 +270,11 @@ namespace Homework12.ViewModel
         private DelegateCommand? _openTransferFundsWin;
         public DelegateCommand OpenTransferFundsWin =>
             _openTransferFundsWin ??= new DelegateCommand(OpenTransferFundsWindowMethod);
+
+        // команда на закрытие информационного окна
+        private DelegateCommand? _closeInfoWin;
+        public DelegateCommand CloseInfoWin =>
+            _closeInfoWin ??= new DelegateCommand(CloseInfoWindowMethod);
 
         // команда на закрытие окна
         public ICommand? CloseCommand { get; private set; }
@@ -284,6 +302,28 @@ namespace Homework12.ViewModel
             SetCenterPositionAndOpen(newAccountWindow);
         }
 
+        /// <summary>
+        /// Метод открытия информационного окна
+        /// </summary>
+        private static void OpenInfoWindowMethod()
+        {
+            if (InfoText != null) _infoWindow = new InfoWindow(InfoText);
+            if (_infoWindow == null) return;
+            _infoWindow.Owner = Application.Current.MainWindow;
+            _infoWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            _infoWindow.ShowDialog();
+        }
+
+        /// <summary>
+        /// Метод закрытия информационного окна
+        /// </summary>
+        private void CloseInfoWindowMethod()
+        {
+            CloseCommand = new DelegateCommand(Close);
+            _infoWindow?.Close();
+            _infoWindow = null;
+        }
+        
         /// <summary>
         /// Метод открытия окна пополнения счёта
         /// </summary>

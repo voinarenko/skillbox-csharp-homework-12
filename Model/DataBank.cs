@@ -15,6 +15,8 @@ namespace Homework12.Model
     }
     public static class DataBank
     {
+        private static string? _infoMessage;
+
         /// <summary>
         /// Получение списка клиентов
         /// </summary>
@@ -22,12 +24,9 @@ namespace Homework12.Model
         public static List<Client> GetAllClients()
         {
             using var db = new ApplicationContext();
-            if (db.Clients != null)
-            {
-                var result = db.Clients.ToList();
-                return result;
-            }
-            return new List<Client>();
+            if (db.Clients == null) return new List<Client>();
+            var result = db.Clients.ToList();
+            return result;
         }
 
         /// <summary>
@@ -37,12 +36,9 @@ namespace Homework12.Model
         public static List<Account> GetAllAccounts()
         {
             using var db = new ApplicationContext();
-            if (db.Accounts != null)
-            {
-                var result = db.Accounts.ToList();
-                return result;
-            }
-            return new List<Account>();
+            if (db.Accounts == null) return new List<Account>();
+            var result = db.Accounts.ToList();
+            return result;
         }
 
         /// <summary>
@@ -82,10 +78,13 @@ namespace Homework12.Model
         /// <param name="client">клиент</param>
         /// <param name="type">тип счёта</param>
         /// <returns>результат выполнения</returns>
-        public static void OpenAccount(Client client, AccountType type)
+        public static string OpenAccount(Client client, AccountType type)
         {
             using var db = new ApplicationContext();
-            var generated = GenerateAccountNumber();
+            var generated = GenerateAccountNumber(); 
+            var existingAccounts = GetAllAccountsByClientId(client.Id);
+            var exists = false;
+            
 
             // проверка существования записи и генерация нового номера
             for (; ; )
@@ -95,10 +94,26 @@ namespace Homework12.Model
                 generated = GenerateAccountNumber();
             }
             
+            // проверка на существующий счёт указанного типа
+            foreach (var a in existingAccounts.Where(a => a.TypeAcc == type))
+            {
+                exists = true;
+            }
+
             // открытие нового счёта
-            var newAccount = SelectAccountType(generated, 0, client.Id, type);
-            if (newAccount != null) db.Accounts?.Add(newAccount);
-            db.SaveChanges();
+            if (exists)
+            {
+                _infoMessage = "Счёт существует!";
+            }
+            else
+            {
+                var newAccount = SelectAccountType(generated, 0, client.Id, type);
+                if (newAccount != null) db.Accounts?.Add(newAccount);
+                db.SaveChanges();
+                _infoMessage = "Счёт открыт!";
+            }
+
+            return _infoMessage;
         }
         
         /// <summary>
@@ -120,7 +135,6 @@ namespace Homework12.Model
 
             return account;
         }
-
 
         /// <summary>
         /// Закрытие счёта

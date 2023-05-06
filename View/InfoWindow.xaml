@@ -1,0 +1,36 @@
+﻿<Window x:Class="Homework12.View.InfoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewmodel="clr-namespace:Homework12.ViewModel"
+        d:DataContext="{d:DesignInstance Type=viewmodel:DataManage}"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="16"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        mc:Ignorable="d"
+        Title="Информация" Height="290" Width="370"
+        Name="InfoWin"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+    <Grid>
+        <materialDesign:Card Grid.Column="0" Grid.Row="0" 
+                             Padding="32" Margin="16,16,16,16">
+            <StackPanel>
+                <Label Content="СООБЩЕНИЕ:" Height="30" HorizontalAlignment="Center" FontWeight="Bold"/>
+                <StackPanel Orientation="Horizontal" Height="30" HorizontalAlignment="Center">
+                    <TextBlock x:Name="MessageText" HorizontalAlignment="Center"/>
+                </StackPanel>
+                <Button Name="InfoOkButton" Content="OK" 
+                        Height="27" Width="78" Margin="0,60,0,0" Padding="16,4,16,9"
+                        Command="{Binding Path=CloseInfoWin}" CommandParameter="{Binding ElementName=InfoWin}"/>
+            </StackPanel>
+        </materialDesign:Card>
+
+    </Grid>
+</Window>
