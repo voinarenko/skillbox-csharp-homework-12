@@ -7,7 +7,7 @@
             Number = number;
             Sum = sum;
             ClientId = clientId;
-            AccountType = accountType;
+            TypeAcc = accountType;
         }
     }
 }

@@ -4,9 +4,12 @@ using Homework12.Model;
 using Homework12.View;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Markup;
 using static Homework12.Model.DataBank;
 using DelegateCommand = Prism.Commands.DelegateCommand;
 
@@ -55,6 +58,7 @@ namespace Homework12.ViewModel
         public string? ClientLastName { get; set; }
 
         // свойства счетов
+        public AccountType AccType { get; set; }
         public decimal AccountSum { get; set; }
         public Account? AccountTarget { get; set; }
 
@@ -62,6 +66,23 @@ namespace Homework12.ViewModel
         public static Client? SelectedClient { get; set; }
         public static Account? SelectedAccount { get; set; }
         
+        #endregion
+
+        #region Передача данных типов счёта в ComboBox
+
+        private AccountType _accountType;
+
+        public AccountType SelectedType
+        {
+            get => _accountType;
+            set
+            {
+                if (_accountType == value) return;
+                _accountType = value;
+                OnPropertyChanged();
+            }
+        }
+
         #endregion
 
         #region Команды операций с БД
@@ -115,9 +136,12 @@ namespace Homework12.ViewModel
         /// </summary>
         private void OpenNewAccountMethod()
         {
+            CloseCommand = new DelegateCommand(Close);
             if (SelectedClient == null) return;
-            OpenAccount(SelectedClient);
+            OpenAccount(SelectedClient, AccType);
             UpdateAllAccountsView(SelectedClient);
+            _currentWindow?.Close();
+            _currentWindow = null;
         }
 
         /// <summary>
@@ -220,6 +244,10 @@ namespace Homework12.ViewModel
         public DelegateCommand OpenAddNewClientWin =>
             _openAddNewClientWin ??= new DelegateCommand(OpenAddNewClientWindowMethod);
 
+        // команда на открытие окна открытия нового счёта
+        private DelegateCommand? _openOpenNewAccountWin;
+        public DelegateCommand OpenOpenNewAccountWin => _openOpenNewAccountWin ??= new DelegateCommand(OpenNewAccountWindowMethod);
+
         // команда на открытие окна пополнения счёта
         private DelegateCommand? _openAddFundsWin;
         public DelegateCommand OpenAddFundsWin =>
@@ -245,6 +273,15 @@ namespace Homework12.ViewModel
         {
             var newClientWindow = new AddNewClientWindow();
             SetCenterPositionAndOpen(newClientWindow);
+        }
+
+        /// <summary>
+        /// Метод открытия окна открытия нового счёта
+        /// </summary>
+        private static void OpenNewAccountWindowMethod()
+        {
+            var newAccountWindow = new OpenAccountWindow();
+            SetCenterPositionAndOpen(newAccountWindow);
         }
 
         /// <summary>
@@ -301,5 +338,27 @@ namespace Homework12.ViewModel
         }
 
         #endregion
+
     }
+
+    #region Конвертер Enum в Collection
+
+    [ValueConversion(typeof(Enum), typeof(IEnumerable<ValueDescription>))]
+    public class EnumToCollectionConverter : MarkupExtension, IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return EnumHelper.GetAllValuesAndDescriptions(value.GetType());
+        }
+        public object? ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+        public override object ProvideValue(IServiceProvider serviceProvider)
+        {
+            return this;
+        }
+    }
+
+    #endregion
 }

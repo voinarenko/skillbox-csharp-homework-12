@@ -1,13 +1,16 @@
 ﻿using Homework12.Model.Data;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Homework12.Model
 {
     public enum AccountType
     {
+        [Description("Недепозитный")]
         NonDeposit,
+        [Description("Депозитный")]
         Deposit
     }
     public static class DataBank
@@ -77,8 +80,9 @@ namespace Homework12.Model
         /// Открытие нового счёта
         /// </summary>
         /// <param name="client">клиент</param>
+        /// <param name="type">тип счёта</param>
         /// <returns>результат выполнения</returns>
-        public static void OpenAccount(Client client)
+        public static void OpenAccount(Client client, AccountType type)
         {
             using var db = new ApplicationContext();
             var generated = GenerateAccountNumber();
@@ -92,21 +96,29 @@ namespace Homework12.Model
             }
             
             // открытие нового счёта
-            var newAccount = SelectAccountType(generated, 0, client.Id, AccountType.NonDeposit);
+            var newAccount = SelectAccountType(generated, 0, client.Id, type);
             if (newAccount != null) db.Accounts?.Add(newAccount);
             db.SaveChanges();
         }
         
+        /// <summary>
+        /// Присвоение параметра "тип счёта", в зависимости от выбора
+        /// </summary>
+        /// <param name="number">номер счёта</param>
+        /// <param name="sum">сумма</param>
+        /// <param name="clientId">ID клиента</param>
+        /// <param name="accountType">тип счёта</param>
+        /// <returns></returns>
         public static Account? SelectAccountType(int number, decimal sum, int clientId, AccountType accountType)
         {
-            Account? newAccount = accountType switch
+            Account? account = accountType switch
             {
                 AccountType.NonDeposit => new NonDepositAccount(number, sum, clientId, accountType),
                 AccountType.Deposit => new DepositAccount(number, sum, clientId, accountType),
                 _ => null
             };
 
-            return newAccount;
+            return account;
         }
 
 

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Homework12.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20230502140209_Initial")]
+    [Migration("20230505204322_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -35,9 +35,10 @@ namespace Homework12.Migrations
                     b.Property<decimal>("Sum")
                         .HasColumnType("decimal(18,2)");
 
-                    b.HasKey("Number");
+                    b.Property<int?>("TypeAcc")
+                        .HasColumnType("int");
 
-                    b.HasIndex("ClientId");
+                    b.HasKey("Number");
 
                     b.ToTable("Accounts");
                 });
@@ -59,22 +60,6 @@ namespace Homework12.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Clients");
-                });
-
-            modelBuilder.Entity("Homework12.Model.Account", b =>
-                {
-                    b.HasOne("Homework12.Model.Client", "Client")
-                        .WithMany("Accounts")
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Client");
-                });
-
-            modelBuilder.Entity("Homework12.Model.Client", b =>
-                {
-                    b.Navigation("Accounts");
                 });
 #pragma warning restore 612, 618
         }
