@@ -14,7 +14,7 @@
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         mc:Ignorable="d"
-        Title="Перевод средств" Height="290" Width="370"
+        Title="Перевод средств" Height="320" Width="370"
         Name="TransferFundsWin"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">
@@ -28,6 +28,13 @@
                     <Label Content="Сумма:" Width="100" VerticalAlignment="Center"/>
                     <TextBox Name="BoxTransferSum" Width="150" VerticalAlignment="Center"
                              Text="{Binding Path=AccountSum, Mode=TwoWay}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Height="30">
+                    <Label Content="Клиенту:" Width="100" VerticalAlignment="Center"/>
+                    <ComboBox Name="ClientSelectComboBox" Height="26" Width="150" VerticalAlignment="Center" 
+                              ItemsSource="{Binding Path=SelectedClients}"
+                              DisplayMemberPath="Number"
+                              SelectedItem="{Binding Path=ClientTarget}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Height="30">
                     <Label Content="На счёт:" Width="100" VerticalAlignment="Center"/>
