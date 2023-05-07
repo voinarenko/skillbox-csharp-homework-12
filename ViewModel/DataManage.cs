@@ -51,6 +51,9 @@ namespace Homework12.ViewModel
             }
         }
 
+        // список клиентов-получателей
+        public static List<Client>? SelectedClients { get; set; }
+
         // счета, отобранные по ID клиента
         public static List<Account>? SelectedAccounts { get; set; }
 
@@ -63,9 +66,11 @@ namespace Homework12.ViewModel
         public decimal AccountSum { get; set; }
         public Account? AccountTarget { get; set; }
 
+
         // свойства для выделенных элементов
         public static Client? SelectedClient { get; set; }
         public static Account? SelectedAccount { get; set; }
+        public static Client? ClientTarget { get; set; }
         
         // информационная строка
         public static string? InfoText { get; set; }
@@ -195,6 +200,7 @@ namespace Homework12.ViewModel
         private void TransferFundsMethod()
         {
             CloseCommand = new DelegateCommand(Close);
+            if(ClientTarget == null || AccountTarget == null) return;
             TransferFunds(SelectedAccount, AccountTarget, Convert.ToDecimal(AccountSum));
             UpdateAllAccountsView(SelectedClient);
             _currentWindow?.Close();
@@ -245,6 +251,14 @@ namespace Homework12.ViewModel
                 MainWindow.AllAccountsView.Items.Clear();
                 MainWindow.AllAccountsView.ItemsSource = AllAccounts;
                 MainWindow.AllAccountsView.Items.Refresh();
+        }
+
+        /// <summary>
+        /// Обновление списка счетов по ID клиента для перевода средств
+        /// </summary>
+        public static void UpdateAccountsList()
+        {
+            if (ClientTarget != null) SelectedAccounts = GetAllAccountsByClientId(ClientTarget.Id);
         }
 
         #endregion
@@ -340,9 +354,9 @@ namespace Homework12.ViewModel
         private static void OpenTransferFundsWindowMethod()
         {
             if (SelectedClient == null || SelectedAccount == null) return;
-            var donorAccount = SelectedAccount.Number;
-            SelectedAccounts = GetAllAccountsByClientId(SelectedClient.Id);
-            SelectedAccounts.RemoveAll(a => a.Number == donorAccount);
+            var donorClient = SelectedClient.Id;
+            SelectedClients = GetAllClients();
+            SelectedClients.RemoveAll(c => c.Id == donorClient);
             var newTransferWindow = new TransferFundsWindow();
             SetCenterPositionAndOpen(newTransferWindow);
         }

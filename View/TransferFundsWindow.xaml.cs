@@ -13,5 +13,11 @@ namespace Homework12.View
             InitializeComponent();
             DataContext = new DataManage();
         }
+
+        private void ClientSelectComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            DataManage.UpdateAccountsList();
+            AccSelectComboBox.ItemsSource=DataManage.SelectedAccounts;
+        }
     }
 }

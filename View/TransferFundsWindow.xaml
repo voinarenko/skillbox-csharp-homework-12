@@ -14,7 +14,7 @@
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         mc:Ignorable="d"
-        Title="Перевод средств" Height="290" Width="370"
+        Title="Перевод средств" Height="320" Width="370"
         Name="TransferFundsWin"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">
@@ -30,11 +30,27 @@
                              Text="{Binding Path=AccountSum, Mode=TwoWay}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Height="30">
+                    <Label Content="Клиенту:" Width="100" VerticalAlignment="Center"/>
+                    <ComboBox Name="ClientSelectComboBox" Height="26" Width="150" VerticalAlignment="Center" 
+                              ItemsSource="{Binding Path=SelectedClients}"
+                              SelectedItem="{Binding Path=ClientTarget}" 
+                              SelectionChanged="ClientSelectComboBox_SelectionChanged">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Path=NameLast}" Width="100" />
+                                    <TextBlock Text="{Binding Path=NameFirst}" Width="100" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Height="30">
                     <Label Content="На счёт:" Width="100" VerticalAlignment="Center"/>
-                    <ComboBox Name="AccSelectComboBox" Height="26" Width="150" VerticalAlignment="Center" 
+                    <ComboBox x:Name="AccSelectComboBox" Height="26" Width="150" VerticalAlignment="Center" 
                               ItemsSource="{Binding Path=SelectedAccounts}"
                               DisplayMemberPath="Number"
-                              SelectedItem="{Binding Path=AccountTarget}"/>
+                              SelectedItem="{Binding Path=AccountTarget}"></ComboBox>
                 </StackPanel>
                 <Button x:Name="ClientAddOkButton" Content="OK" 
                         Height="27" Width="78" Margin="0,30,0,0" Padding="16,4,16,9"
