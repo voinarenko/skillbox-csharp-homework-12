@@ -4,9 +4,13 @@ using Homework12.Model;
 using Homework12.View;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Markup;
+using static Homework12.Model.DataBank;
 using DelegateCommand = Prism.Commands.DelegateCommand;
 
 namespace Homework12.ViewModel
@@ -17,32 +21,33 @@ namespace Homework12.ViewModel
 
         // текущее окно
         private static Window? _currentWindow;
-        
+        private static Window? _infoWindow;
+
         #endregion
 
         #region Свойства
 
         // список всех клиентов
-        private List<Client> _allClients = DataBank.GetAllClients();
+        private List<Client> _allClients = GetAllClients();
         public List<Client> AllClients
         {
             get => _allClients;
             set
             {
                 _allClients = value;
-                OnPropertyChanged("AllClients");
+                OnPropertyChanged();
             }
         }
 
         // список всех счетов
-        private List<Account> _allAccounts = DataBank.GetAllAccounts();
+        private List<Account> _allAccounts = GetAllAccounts();
         public List<Account> AllAccounts
         {
             get => _allAccounts;
             set
             {
                 _allAccounts = value;
-                OnPropertyChanged("AllAccounts");
+                OnPropertyChanged();
             }
         }
 
@@ -54,6 +59,7 @@ namespace Homework12.ViewModel
         public string? ClientLastName { get; set; }
 
         // свойства счетов
+        public AccountType AccType { get; set; }
         public decimal AccountSum { get; set; }
         public Account? AccountTarget { get; set; }
 
@@ -61,36 +67,63 @@ namespace Homework12.ViewModel
         public static Client? SelectedClient { get; set; }
         public static Account? SelectedAccount { get; set; }
         
+        // информационная строка
+        public static string? InfoText { get; set; }
+
+        #endregion
+
+        #region Передача данных типов счёта в ComboBox
+
+        private AccountType _accountType;
+
+        public AccountType SelectedType
+        {
+            get => _accountType;
+            set
+            {
+                if (_accountType == value) return;
+                _accountType = value;
+                OnPropertyChanged();
+            }
+        }
+
         #endregion
 
         #region Команды операций с БД
         //
         private DelegateCommand? _refreshAccounts;
-        public DelegateCommand RefreshAccounts => _refreshAccounts ??= new DelegateCommand(UpdateAccountsCheckMethod);
+        public DelegateCommand RefreshAccounts => 
+            _refreshAccounts ??= new DelegateCommand(UpdateAccountsCheckMethod);
 
         // добавление клиента
         private DelegateCommand? _addNewClient;
-        public DelegateCommand AddNewClient => _addNewClient ??= new DelegateCommand(AddNewClientMethod);
+        public DelegateCommand AddNewClient => 
+            _addNewClient ??= new DelegateCommand(AddNewClientMethod);
 
         // открытие счёта
         private DelegateCommand? _openNewAccount;
-        public DelegateCommand OpenNewAccount => _openNewAccount ??= new DelegateCommand(OpenNewAccountMethod);
+        public DelegateCommand OpenNewAccount => 
+            _openNewAccount ??= new DelegateCommand(OpenNewAccountMethod);
 
         // удаление клиента
         private DelegateCommand? _deleteClient;
-        public DelegateCommand DeleteClient => _deleteClient ??= new DelegateCommand(DeleteClientMethod);
+        public DelegateCommand DeleteClient => 
+            _deleteClient ??= new DelegateCommand(DeleteClientMethod);
 
         // закрытие счёта
         private DelegateCommand? _closeAccount;
-        public DelegateCommand CloseAccount => _closeAccount ??= new DelegateCommand(CloseAccountMethod);
+        public DelegateCommand CloseAccount => 
+            _closeAccount ??= new DelegateCommand(CloseAccountMethod);
 
         // пополнение счёта
         private DelegateCommand? _fundAccount;
-        public DelegateCommand FundAccount => _fundAccount ??= new DelegateCommand(FundAccountMethod);
+        public DelegateCommand FundAccount => 
+            _fundAccount ??= new DelegateCommand(FundAccountMethod);
 
         // перевод средств
         private DelegateCommand? _transferFunds;
-        public DelegateCommand TransferFunds => _transferFunds ??= new DelegateCommand(TransferFundsMethod);
+        public DelegateCommand TransferFunds => 
+            _transferFunds ??= new DelegateCommand(TransferFundsMethod);
 
         #endregion
 
@@ -103,7 +136,7 @@ namespace Homework12.ViewModel
         {
             CloseCommand = new DelegateCommand(Close);
             if (ClientFirstName == null || ClientFirstName.Replace(" ", "").Length == 0 || ClientLastName == null || ClientLastName.Replace(" ", "").Length == 0) return;
-                DataBank.AddClient(ClientFirstName, ClientLastName);
+                AddClient(ClientFirstName, ClientLastName);
                 UpdateAllClientsView();
                 _currentWindow?.Close();
                 _currentWindow = null;
@@ -114,9 +147,13 @@ namespace Homework12.ViewModel
         /// </summary>
         private void OpenNewAccountMethod()
         {
+            CloseCommand = new DelegateCommand(Close);
             if (SelectedClient == null) return;
-            DataBank.OpenAccount(SelectedClient);
+            InfoText = OpenAccount(SelectedClient, AccType);
+            OpenInfoWindowMethod();
             UpdateAllAccountsView(SelectedClient);
+            _currentWindow?.Close();
+            _currentWindow = null;
         }
 
         /// <summary>
@@ -125,7 +162,7 @@ namespace Homework12.ViewModel
         private void DeleteClientMethod()
         {
             if (SelectedClient == null) return;
-            DataBank.DeleteClient(SelectedClient);
+            DeleteClient(SelectedClient);
             UpdateAllClientsView();
             UpdateAllAccountsView(SelectedClient);
         }
@@ -136,7 +173,7 @@ namespace Homework12.ViewModel
         private void CloseAccountMethod()
         {
             if (SelectedAccount == null) return;
-            DataBank.CloseAccount(SelectedAccount);
+            CloseAccount(SelectedAccount);
             if (SelectedClient != null) UpdateAllAccountsView(SelectedClient);
         }
 
@@ -146,7 +183,7 @@ namespace Homework12.ViewModel
         private void FundAccountMethod()
         {
             CloseCommand = new DelegateCommand(Close);
-            DataBank.FundAccount(SelectedAccount, Convert.ToDecimal(AccountSum));
+            FundAccount(SelectedAccount, Convert.ToDecimal(AccountSum));
             UpdateAllAccountsView(SelectedClient);
             _currentWindow?.Close();
             _currentWindow = null;
@@ -158,7 +195,7 @@ namespace Homework12.ViewModel
         private void TransferFundsMethod()
         {
             CloseCommand = new DelegateCommand(Close);
-            DataBank.TransferFunds(SelectedAccount, AccountTarget, Convert.ToDecimal(AccountSum));
+            TransferFunds(SelectedAccount, AccountTarget, Convert.ToDecimal(AccountSum));
             UpdateAllAccountsView(SelectedClient);
             _currentWindow?.Close();
             _currentWindow = null;
@@ -172,7 +209,7 @@ namespace Homework12.ViewModel
         /// </summary>
         private void UpdateAllClientsView()
         {
-            AllClients = DataBank.GetAllClients();
+            AllClients = GetAllClients();
             if (MainWindow.AllClientsView == null) return;
             MainWindow.AllClientsView.ItemsSource = null;
             MainWindow.AllClientsView.Items.Clear();
@@ -202,7 +239,7 @@ namespace Homework12.ViewModel
         private void UpdateAllAccountsView(Client? client)
         {
                 if (client == null) return;
-                AllAccounts = DataBank.GetAllAccountsByClientId(client.Id);
+                AllAccounts = GetAllAccountsByClientId(client.Id);
                 if (MainWindow.AllAccountsView == null) return;
                 MainWindow.AllAccountsView.ItemsSource = null;
                 MainWindow.AllAccountsView.Items.Clear();
@@ -219,6 +256,11 @@ namespace Homework12.ViewModel
         public DelegateCommand OpenAddNewClientWin =>
             _openAddNewClientWin ??= new DelegateCommand(OpenAddNewClientWindowMethod);
 
+        // команда на открытие окна открытия нового счёта
+        private DelegateCommand? _openOpenNewAccountWin;
+        public DelegateCommand OpenOpenNewAccountWin => 
+            _openOpenNewAccountWin ??= new DelegateCommand(OpenNewAccountWindowMethod);
+
         // команда на открытие окна пополнения счёта
         private DelegateCommand? _openAddFundsWin;
         public DelegateCommand OpenAddFundsWin =>
@@ -228,6 +270,11 @@ namespace Homework12.ViewModel
         private DelegateCommand? _openTransferFundsWin;
         public DelegateCommand OpenTransferFundsWin =>
             _openTransferFundsWin ??= new DelegateCommand(OpenTransferFundsWindowMethod);
+
+        // команда на закрытие информационного окна
+        private DelegateCommand? _closeInfoWin;
+        public DelegateCommand CloseInfoWin =>
+            _closeInfoWin ??= new DelegateCommand(CloseInfoWindowMethod);
 
         // команда на закрытие окна
         public ICommand? CloseCommand { get; private set; }
@@ -247,6 +294,37 @@ namespace Homework12.ViewModel
         }
 
         /// <summary>
+        /// Метод открытия окна открытия нового счёта
+        /// </summary>
+        private static void OpenNewAccountWindowMethod()
+        {
+            var newAccountWindow = new OpenAccountWindow();
+            SetCenterPositionAndOpen(newAccountWindow);
+        }
+
+        /// <summary>
+        /// Метод открытия информационного окна
+        /// </summary>
+        private static void OpenInfoWindowMethod()
+        {
+            if (InfoText != null) _infoWindow = new InfoWindow(InfoText);
+            if (_infoWindow == null) return;
+            _infoWindow.Owner = Application.Current.MainWindow;
+            _infoWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            _infoWindow.ShowDialog();
+        }
+
+        /// <summary>
+        /// Метод закрытия информационного окна
+        /// </summary>
+        private void CloseInfoWindowMethod()
+        {
+            CloseCommand = new DelegateCommand(Close);
+            _infoWindow?.Close();
+            _infoWindow = null;
+        }
+        
+        /// <summary>
         /// Метод открытия окна пополнения счёта
         /// </summary>
         private static void OpenAddFundsWindowMethod()
@@ -263,7 +341,7 @@ namespace Homework12.ViewModel
         {
             if (SelectedClient == null || SelectedAccount == null) return;
             var donorAccount = SelectedAccount.Number;
-            SelectedAccounts = DataBank.GetAllAccountsByClientId(SelectedClient.Id);
+            SelectedAccounts = GetAllAccountsByClientId(SelectedClient.Id);
             SelectedAccounts.RemoveAll(a => a.Number == donorAccount);
             var newTransferWindow = new TransferFundsWindow();
             SetCenterPositionAndOpen(newTransferWindow);
@@ -300,5 +378,27 @@ namespace Homework12.ViewModel
         }
 
         #endregion
+
     }
+
+    #region Конвертер Enum в Collection
+
+    [ValueConversion(typeof(Enum), typeof(IEnumerable<ValueDescription>))]
+    public class EnumToCollectionConverter : MarkupExtension, IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return EnumHelper.GetAllValuesAndDescriptions(value.GetType());
+        }
+        public object? ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+        public override object ProvideValue(IServiceProvider serviceProvider)
+        {
+            return this;
+        }
+    }
+
+    #endregion
 }

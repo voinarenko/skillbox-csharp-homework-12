@@ -1,12 +1,22 @@
 ﻿using Homework12.Model.Data;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Homework12.Model
 {
+    public enum AccountType
+    {
+        [Description("Недепозитный")]
+        NonDeposit,
+        [Description("Депозитный")]
+        Deposit
+    }
     public static class DataBank
     {
+        private static string? _infoMessage;
+
         /// <summary>
         /// Получение списка клиентов
         /// </summary>
@@ -14,12 +24,9 @@ namespace Homework12.Model
         public static List<Client> GetAllClients()
         {
             using var db = new ApplicationContext();
-            if (db.Clients != null)
-            {
-                var result = db.Clients.ToList();
-                return result;
-            }
-            return new List<Client>();
+            if (db.Clients == null) return new List<Client>();
+            var result = db.Clients.ToList();
+            return result;
         }
 
         /// <summary>
@@ -29,12 +36,9 @@ namespace Homework12.Model
         public static List<Account> GetAllAccounts()
         {
             using var db = new ApplicationContext();
-            if (db.Accounts != null)
-            {
-                var result = db.Accounts.ToList();
-                return result;
-            }
-            return new List<Account>();
+            if (db.Accounts == null) return new List<Account>();
+            var result = db.Accounts.ToList();
+            return result;
         }
 
         /// <summary>
@@ -72,11 +76,15 @@ namespace Homework12.Model
         /// Открытие нового счёта
         /// </summary>
         /// <param name="client">клиент</param>
+        /// <param name="type">тип счёта</param>
         /// <returns>результат выполнения</returns>
-        public static void OpenAccount(Client client)
+        public static string OpenAccount(Client client, AccountType type)
         {
             using var db = new ApplicationContext();
-            var generated = GenerateAccountNumber();
+            var generated = GenerateAccountNumber(); 
+            var existingAccounts = GetAllAccountsByClientId(client.Id);
+            var exists = false;
+            
 
             // проверка существования записи и генерация нового номера
             for (; ; )
@@ -86,10 +94,46 @@ namespace Homework12.Model
                 generated = GenerateAccountNumber();
             }
             
+            // проверка на существующий счёт указанного типа
+            foreach (var a in existingAccounts.Where(a => a.TypeAcc == type))
+            {
+                exists = true;
+            }
+
             // открытие нового счёта
-            var newAccount = new Account { Number = generated, Sum = 0, ClientId = client.Id };
-            db.Accounts?.Add(newAccount);
-            db.SaveChanges();
+            if (exists)
+            {
+                _infoMessage = "Счёт существует!";
+            }
+            else
+            {
+                var newAccount = SelectAccountType(generated, 0, client.Id, type);
+                if (newAccount != null) db.Accounts?.Add(newAccount);
+                db.SaveChanges();
+                _infoMessage = "Счёт открыт!";
+            }
+
+            return _infoMessage;
+        }
+        
+        /// <summary>
+        /// Присвоение параметра "тип счёта", в зависимости от выбора
+        /// </summary>
+        /// <param name="number">номер счёта</param>
+        /// <param name="sum">сумма</param>
+        /// <param name="clientId">ID клиента</param>
+        /// <param name="accountType">тип счёта</param>
+        /// <returns></returns>
+        public static Account? SelectAccountType(int number, decimal sum, int clientId, AccountType accountType)
+        {
+            Account? account = accountType switch
+            {
+                AccountType.NonDeposit => new NonDepositAccount(number, sum, clientId, accountType),
+                AccountType.Deposit => new DepositAccount(number, sum, clientId, accountType),
+                _ => null
+            };
+
+            return account;
         }
 
         /// <summary>

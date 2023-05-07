@@ -73,7 +73,7 @@
                 </ListView>
                 <StackPanel Orientation="Horizontal" Margin="0,36,0,0">
                     <Button Content="Открыть" Height="27" Width="78" FontSize="10"
-                            Command="{Binding Path=OpenNewAccount}"/>
+                            Command="{Binding Path=OpenOpenNewAccountWin}"/>
                     <Button Content="Закрыть" Height="27" Width="78" FontSize="10"
                             Command="{Binding Path=CloseAccount}"/>
                     <Button Content="Пополнить" Height="27" Width="78" FontSize="9" 
