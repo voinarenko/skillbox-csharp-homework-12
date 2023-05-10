@@ -6,6 +6,64 @@ using System.Linq;
 
 namespace Homework12.Model
 {
+    internal interface IRegister<T>
+    {
+        void Push (T data);
+        T Pop ();
+        T this[int  index] { get; set; }
+    }
+
+    internal interface IIRegisterProvider<TElement> : IEnumerable<TElement>
+    {
+        Register<TElement> ToList();
+    }
+
+    public class Register<T> : IRegister<T>
+    {
+        private T[]? _items;
+        private int _size;
+
+        public Register()
+        {
+            _items = Array.Empty<T>();
+            _size = 0;
+        }
+
+        public Register(params T[] args)
+        {
+            _items = args;
+            _size = args.Length - 1;
+        }
+
+        public void Push(T data)
+        {
+            if (_size == _items!.Length)
+            {
+                Array.Resize(ref _items, _size == 0 ? 4 : _items.Length * 2);
+            }
+            _items[_size] = data;
+        }
+
+        public T Pop()
+        {
+            var temp = _items![--_size];
+            _items[_size] = default(T) ?? throw new InvalidOperationException();
+            return temp;
+        }
+
+        public T this[int index]
+        {
+            get => _items![--_size];
+            set => _items![index] = value;
+        }
+
+        public static Register<TSource> ToRegister<TSource>(TSource source)
+        {
+            return source is not IIRegisterProvider<TSource> registerProvider ? new Register<TSource>(source) : registerProvider.ToList();
+        }
+
+    }
+
     public enum AccountType
     {
         [Description("Недепозитный")]
@@ -21,12 +79,13 @@ namespace Homework12.Model
         /// Получение списка клиентов
         /// </summary>
         /// <returns>список клиентов</returns>
-        public static List<Client> GetAllClients()
+        public static Register<Client> GetAllClients()
         {
             using var db = new ApplicationContext();
-            if (db.Clients == null) return new List<Client>();
+            if (db.Clients == null) return new Register<Client>();
             var result = db.Clients.ToList();
-            return result;
+            var output = Register<Client>.ToRegister<Client>(result);
+            return output;
         }
 
         /// <summary>
