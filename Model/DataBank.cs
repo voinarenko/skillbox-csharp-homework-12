@@ -21,39 +21,38 @@ namespace Homework12.Model
     public class Register<T> : IRegister<T>
     {
         private T[]? _items;
-        private int _size;
 
         public Register()
         {
             _items = Array.Empty<T>();
-            _size = 0;
+            Count = 0;
         }
 
         public Register(params T[] args)
         {
             _items = args;
-            _size = args.Length - 1;
+            Count = args.Length - 1;
         }
 
         public void Push(T data)
         {
-            if (_size == _items!.Length)
+            if (Count == _items!.Length)
             {
-                Array.Resize(ref _items, _size == 0 ? 4 : _items.Length * 2);
+                Array.Resize(ref _items, Count == 0 ? 4 : _items.Length * 2);
             }
-            _items[_size] = data;
+            _items[Count] = data;
         }
 
         public T Pop()
         {
-            var temp = _items![--_size];
-            _items[_size] = default(T) ?? throw new InvalidOperationException();
+            var temp = _items![--Count];
+            _items[Count] = default(T) ?? throw new InvalidOperationException();
             return temp;
         }
 
         public T this[int index]
         {
-            get => _items![--_size];
+            get => _items![--Count];
             set => _items![index] = value;
         }
 
@@ -62,6 +61,7 @@ namespace Homework12.Model
             return source is not IIRegisterProvider<TSource> registerProvider ? new Register<TSource>(source) : registerProvider.ToList();
         }
 
+        public int Count { get; private set; }
     }
 
     public enum AccountType
@@ -113,7 +113,7 @@ namespace Homework12.Model
             // проверка существования записи
             var clientExists = db.Clients != null && db.Clients.Any(c => c.NameFirst == nameFirst && c.NameLast == nameLast);
             if (clientExists) return;
-            var newClient = new Client { NameFirst = nameFirst, NameLast = nameLast };
+            var newClient = new Client (0, nameFirst, nameLast);
             db.Clients?.Add(newClient);
             db.SaveChanges();
         }
